@@ -24,3 +24,12 @@ Thumbs.db
 
 # Temporary files
 *.tmp
+
+# ML Models (quá lớn để chia sẻ)
+ml_models/
+*.pkl
+*.joblib
+*.h5
+*.hdf5
+*.model
+*.bin
