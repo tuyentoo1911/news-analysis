@@ -1,0 +1,314 @@
+/* THYNK UNLIMITED - Modern AI News Analysis Platform */
+:root {
+    --primary-color: #1e2a5e;
+    --secondary-color: #6366f1;
+    --accent-color: #ec4899;
+    --success-color: #10b981;
+    --background-light: #f8fafc;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --border-color: #e2e8f0;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --gradient-primary: linear-gradient(135deg, #1e2a5e 0%, #3b4de8 100%);
+    --gradient-accent: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: var(--text-primary);
+    background-color: #ffffff;
+    margin: 0;
+    padding: 0;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+}
+
+.display-4 {
+    font-weight: 700;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 3.5rem;
+    line-height: 1.1;
+}
+
+/* Navigation */
+.thynk-navbar {
+    background: #fff !important;
+    border-bottom: 1px solid #e7ecf7;
+    padding: 1rem 0;
+}
+
+.navbar-brand {
+    text-decoration: none;
+    color: var(--primary-color) !important;
+}
+
+.brand-title {
+    font-weight: 700;
+    font-size: 1.5rem;
+    letter-spacing: 0.15rem;
+    color: #0a1442;
+    line-height: 1;
+}
+
+.brand-sub {
+    font-size: 0.75rem;
+    color: #60708c;
+    letter-spacing: 0.12rem;
+    margin-top: -2px;
+}
+
+.nav-center {
+    gap: 1rem;
+    background: #fff;
+    padding: 0.35rem;
+    border-radius: 2rem;
+    border: 1px solid #e7ecf7;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.pill {
+    padding: 0.45rem 1.1rem;
+    border-radius: 2rem;
+    color: #223050;
+    background: #eef3ff;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.pill.active,
+.pill:hover {
+    background: #0a1442;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(10, 20, 66, 0.25);
+}
+
+.hamburger {
+    width: 44px;
+    height: 44px;
+    border: 0;
+    background: #0a1442;
+    border-radius: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.hamburger span {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background: #fff;
+    border-radius: 1px;
+}
+
+/* Hero Section - Original */
+.hero-section {
+    background: linear-gradient(90deg, #fff 55%, #f0f4ff 55%);
+    padding: 4rem 0;
+    position: relative;
+    overflow: hidden;
+    min-height: 600px;
+}
+
+/* Hero Section - Compact Version */
+.hero-section-compact {
+    background: linear-gradient(90deg, #fff 48%, #f0f4ff 48%);
+    padding: 2rem 0 1.5rem 0;
+    position: relative;
+    overflow: hidden;
+    min-height: 400px;
+}
+
+.hero-content h1 {
+    font-size: 4rem;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+}
+
+.hero-content .lead {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+/* Brain Network Illustration */
+.brain-network {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.brain-core {
+    width: 120px;
+    height: 120px;
+    background: var(--gradient-primary);
+    border-radius: 50%;
+    position: relative;
+    box-shadow: 0 0 50px rgba(99, 102, 241, 0.3);
+    animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.network-node {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: var(--accent-color);
+    border-radius: 50%;
+    animation: float-node 4s ease-in-out infinite;
+}
+
+.network-node:nth-child(1) { top: 10%; right: 20%; animation-delay: 0s; }
+.network-node:nth-child(2) { top: 30%; right: 10%; animation-delay: 0.5s; }
+.network-node:nth-child(3) { top: 60%; right: 15%; animation-delay: 1s; }
+.network-node:nth-child(4) { top: 80%; right: 30%; animation-delay: 1.5s; }
+.network-node:nth-child(5) { top: 20%; left: 15%; animation-delay: 2s; }
+.network-node:nth-child(6) { top: 50%; left: 10%; animation-delay: 2.5s; }
+.network-node:nth-child(7) { top: 75%; left: 25%; animation-delay: 3s; }
+
+@keyframes pulse-glow {
+    0%, 100% { 
+        box-shadow: 0 0 50px rgba(99, 102, 241, 0.3);
+        transform: scale(1);
+    }
+    50% { 
+        box-shadow: 0 0 80px rgba(99, 102, 241, 0.5);
+        transform: scale(1.05);
+    }
+}
+
+@keyframes float-node {
+    0%, 100% { 
+        transform: translateY(0px) scale(1);
+        opacity: 0.7;
+    }
+    50% { 
+        transform: translateY(-10px) scale(1.2);
+        opacity: 1;
+    }
+}
+
+/* Feature Cards */
+.feature-card {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+    height: 100%;
+    box-shadow: var(--shadow-sm);
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--secondary-color);
+}
+
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    color: white;
+    font-size: 2rem;
+}
+
+.feature-card:nth-child(1) .feature-icon {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.feature-card:nth-child(2) .feature-icon {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.feature-card:nth-child(3) .feature-icon {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+/* Buttons */
+.btn-primary {
+    background: var(--gradient-primary);
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    color: white;
+    box-shadow: 0 4px 14px 0 rgba(30, 42, 94, 0.3);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px 0 rgba(30, 42, 94, 0.4);
+    color: white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
+    
+    .hero-section {
+        background: #f0f4ff;
+        padding: 2rem 0;
+    }
+    
+    .nav-center {
+        position: static;
+        transform: none;
+        left: auto;
+        width: 100%;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .pill.d-block {
+        text-align: center;
+        margin-bottom: 0.5rem;
+    }
+    
+    .brand-title {
+        font-size: 1.25rem;
+    }
+    
+    .brand-sub {
+        font-size: 0.7rem;
+    }
+}
+
+@media (max-width: 991px) {
+    .nav-center {
+        display: none !important;
+    }
+}

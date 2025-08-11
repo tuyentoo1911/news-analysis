@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}THYNK UNLIMITED - Phân tích Tin tức bằng AI{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section-compact">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-6 hero-content">
+        <p class="hero-subtitle-compact">Phân tích Tin tức bằng AI</p>
+        <h1 class="hero-title-compact">
+          Phân tích bài báo<br/>
+          <span class="hero-highlight">Nhanh & Chính xác</span>
+        </h1>
+        <p class="hero-description-compact">
+          Nhập nội dung hoặc tải lên file .txt để nhận phân tích tự động: 
+          <strong>cảm xúc, phát hiện tin giả</strong> và <strong>chủ đề nội bật</strong>. 
+          Tối ưu cho tiếng Việt.
+        </p>
+        <div class="hero-action">
+          <a href="{% url 'analyzer:analyze' %}" class="btn-analyze-compact">
+            <i class="fas fa-play me-2"></i>Phân tích ngay
+          </a>
+          <p class="hero-tagline">WHERE INNOVATION MEETS OPPORTUNITY</p>
+        </div>
+      </div>
+      <div class="col-lg-6 d-flex align-items-center justify-content-center">
+        <div class="hero-image-container-compact">
+          <img src="{% static 'img/hero.png' %}" alt="AI Brain Network" class="hero-brain-image-compact" />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Features Section - Compact -->
+<div class="container features-section-compact">
+  <div class="row g-3">
+    <div class="col-md-4">
+      <div class="feature-card-compact">
+        <div class="feature-icon-compact green">
+          <i class="fas fa-smile"></i>
+        </div>
+        <h6 class="feature-title-compact">Phân tích cảm xúc</h6>
+        <p class="feature-description-compact">
+          Xác định bài báo có xu hướng tích cực, trung tính hay tiêu cực kèm xác suất.
+        </p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="feature-card-compact">
+        <div class="feature-icon-compact blue">
+          <i class="fas fa-shield-alt"></i>
+        </div>
+        <h6 class="feature-title-compact">Phát hiện tin giả</h6>
+        <p class="feature-description-compact">
+          Ước lượng mức độ tin cậy của nội dung bằng mô hình Transformers/PhoBERT.
+        </p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="feature-card-compact">
+        <div class="feature-icon-compact orange">
+          <i class="fas fa-tags"></i>
+        </div>
+        <h6 class="feature-title-compact">Chủ đề & Từ khóa</h6>
+        <p class="feature-description-compact">
+          Tự động gọi ý chủ đề cùng các từ khóa nổi bật giúp tóm tắt nhanh nội dung.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+

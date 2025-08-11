@@ -1,0 +1,343 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load analyzer_extras %}
+
+{% block title %}Phân tích bài báo - THYNK UNLIMITED{% endblock %}
+
+{% block content %}
+<!-- Simple Header Section -->
+<div class="analyze-hero-section">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h2 class="analyze-title">Phân tích Tin tức</h2>
+        <h3 class="analyze-subtitle">Nhanh & Chính xác</h3>
+        <p class="analyze-description">
+          Nhập nội dung tin tức để kiểm tra độ tin cậy và phân loại chủ đề với công nghệ AI tiên tiến
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container mt-5">
+<div class="row">
+  <div class="col-lg-8 mx-auto">
+
+    <!-- Analysis Form -->
+    <div class="card shadow">
+      <div class="card-body">
+        <form method="post" id="analysisForm">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="news_text" class="form-label">Nội dung tin tức *</label>
+            <textarea
+              class="form-control"
+              id="news_text"
+              name="news_text"
+              rows="8"
+              placeholder="Nhập hoặc dán nội dung tin tức cần phân tích..."
+              required
+            >
+{% if news_text %}{{ news_text }}{% endif %}</textarea
+            >
+            <div class="form-text">Tối thiểu 50 ký tự</div>
+          </div>
+
+          <div class="mb-3">
+            <label for="news_url" class="form-label"
+              >URL tin tức (tùy chọn)</label
+            >
+            <input
+              type="url"
+              class="form-control"
+              id="news_url"
+              name="news_url"
+              placeholder="https://example.com/news-article"
+              value="{% if news_url %}{{ news_url }}{% endif %}"
+            />
+          </div>
+
+          <div class="d-grid">
+            <button
+              type="submit"
+              class="btn btn-primary btn-lg"
+              id="analyzeBtn"
+            >
+              <i class="fas fa-search me-2"></i>Phân tích ngay
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    {% if result %}
+    <!-- Analysis Results -->
+    <div class="card shadow mt-4">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">
+          <i class="fas fa-chart-pie me-2"></i>Kết quả phân tích AI
+        </h5>
+      </div>
+      <div class="card-body">
+        <!-- Active Models Row -->
+        <div class="row g-4 mb-4">
+          <!-- Model 1: Fake News Detection -->
+          <div class="col-lg-6">
+            <div class="model-result-card active-model">
+              <div class="model-header">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <i class="fas fa-shield-alt me-2 text-primary"></i>
+                    <span class="model-title">Model 1: Phát hiện Tin giả</span>
+                  </div>
+                  <span class="model-status badge bg-success">
+                    <i class="fas fa-check-circle me-1"></i>Hoạt động
+                  </span>
+                </div>
+              </div>
+              <div class="model-content">
+                <div class="result-main mb-3">
+                  {% if result.is_fake %}
+                  <div class="result-indicator danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span class="result-label">Tin giả</span>
+                    <span class="result-confidence">{{ result.confidence|multiply:100|floatformat:1 }}%</span>
+                  </div>
+                  {% else %}
+                  <div class="result-indicator success">
+                    <i class="fas fa-check-circle"></i>
+                    <span class="result-label">Tin thật</span>
+                    <span class="result-confidence">{{ result.confidence|multiply:100|floatformat:1 }}%</span>
+                  </div>
+                  {% endif %}
+                </div>
+                <div class="confidence-details">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <small class="text-muted">Độ tin cậy:</small>
+                    <small class="text-muted">{{ result.confidence|multiply:100|floatformat:1 }}%</small>
+                  </div>
+                  <div class="progress" style="height: 8px">
+                    <div
+                      class="progress-bar {% if result.confidence >= 0.8 %}bg-success{% elif result.confidence >= 0.6 %}bg-warning{% else %}bg-danger{% endif %}"
+                      role="progressbar"
+                      style="width: {% widthratio result.confidence 1 100 %}%"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Model 2: Text Summarization -->
+          <div class="col-lg-6">
+            <div class="model-result-card active-model">
+              <div class="model-header">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <i class="fas fa-compress-alt me-2 text-info"></i>
+                    <span class="model-title">Model 2: Tóm tắt Nội dung</span>
+                  </div>
+                  <span class="model-status badge bg-success">
+                    <i class="fas fa-check-circle me-1"></i>Hoạt động
+                  </span>
+                </div>
+              </div>
+              <div class="model-content">
+                {% if result.summary %}
+                <div class="result-main mb-3">
+                  <div class="result-indicator info">
+                    <i class="fas fa-file-alt"></i>
+                    <span class="result-label">Đã tóm tắt</span>
+                    <span class="result-confidence">{{ result.compression_ratio|multiply:100|floatformat:1 }}% rút gọn</span>
+                  </div>
+                </div>
+                <div class="summary-content">
+                  <div class="summary-header mb-2">
+                    <small class="text-muted fw-bold">📄 Nội dung tóm tắt:</small>
+                  </div>
+                  <div class="summary-text-display">
+                    {{ result.summary }}
+                  </div>
+                  <div class="summary-stats mt-2">
+                    <small class="text-muted">
+                      <i class="fas fa-chart-line me-1"></i>
+                      Độ rút gọn: {{ result.compression_ratio|multiply:100|floatformat:1 }}%
+                    </small>
+                  </div>
+                </div>
+                {% else %}
+                <div class="result-main">
+                  <div class="result-indicator secondary">
+                    <i class="fas fa-clock"></i>
+                    <span class="result-label">Chưa tóm tắt</span>
+                    <span class="result-confidence">Đang xử lý...</span>
+                  </div>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Future Model Row -->
+        <div class="row g-4 mb-4">
+          <div class="col-lg-12">
+            <div class="model-result-card coming-soon-full">
+              <div class="model-header">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <i class="fas fa-heart me-2 text-warning"></i>
+                    <span class="model-title">Model 3: Phân tích Cảm xúc</span>
+                  </div>
+                  <span class="model-status badge bg-warning">
+                    <i class="fas fa-clock me-1"></i>Sắp ra mắt
+                  </span>
+                </div>
+              </div>
+              <div class="model-content">
+                <div class="coming-soon-content">
+                  <p class="mb-2">
+                    <i class="fas fa-rocket me-2 text-warning"></i>
+                    Model phân tích cảm xúc sẽ có khả năng xác định tone cảm xúc của tin tức (tích cực, tiêu cực, trung tính)
+                  </p>
+                  <div class="feature-preview">
+                    <span class="badge bg-light text-dark me-2">😊 Tích cực</span>
+                    <span class="badge bg-light text-dark me-2">😢 Tiêu cực</span>
+                    <span class="badge bg-light text-dark me-2">😐 Trung tính</span>
+                    <span class="badge bg-light text-dark">📊 Độ chính xác cao</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Overall Assessment -->
+        <div class="overall-assessment">
+          <div class="assessment-header mb-3">
+            <h6 class="text-primary mb-0">
+              <i class="fas fa-clipboard-check me-2"></i>Đánh giá tổng quan từ AI
+            </h6>
+          </div>
+          
+          <div class="assessment-content">
+            {% if result.is_fake %}
+            <div class="alert alert-danger border-0 shadow-sm">
+              <div class="d-flex align-items-center">
+                <div class="alert-icon me-3">
+                  <i class="fas fa-exclamation-triangle fa-2x text-danger"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <h6 class="alert-heading mb-2">⚠️ Cảnh báo: Có thể là tin giả</h6>
+                  <p class="mb-2">
+                    Hệ thống AI đánh giá tin tức này có <strong>{{ result.confidence|multiply:100|floatformat:1 }}% khả năng</strong> là tin giả.
+                  </p>
+                  <small class="text-muted">
+                    <i class="fas fa-lightbulb me-1"></i>
+                    Khuyến nghị: Kiểm tra thêm từ các nguồn tin đáng tin cậy và chính thức.
+                  </small>
+                </div>
+              </div>
+            </div>
+            {% else %}
+            <div class="alert alert-success border-0 shadow-sm">
+              <div class="d-flex align-items-center">
+                <div class="alert-icon me-3">
+                  <i class="fas fa-check-circle fa-2x text-success"></i>
+                </div>
+                <div class="flex-grow-1">
+                  <h6 class="alert-heading mb-2">✅ Tin tức có vẻ đáng tin cậy</h6>
+                  <p class="mb-2">
+                    Hệ thống AI đánh giá tin tức này có <strong>{{ result.confidence|multiply:100|floatformat:1 }}% độ tin cậy</strong>.
+                  </p>
+                  <small class="text-muted">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Lưu ý: Vẫn nên đối chiếu với nhiều nguồn tin khác nhau để đảm bảo tính chính xác.
+                  </small>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            
+            <!-- Processing Stats -->
+            {% if result.processing_time %}
+            <div class="processing-stats mt-3">
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <div class="stat-item">
+                    <i class="fas fa-clock text-primary"></i>
+                    <span class="stat-label">Thời gian xử lý</span>
+                    <span class="stat-value">{{ result.processing_time }}s</span>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="stat-item">
+                    <i class="fas fa-microchip text-info"></i>
+                    <span class="stat-label">Models sử dụng</span>
+                    <span class="stat-value">2 AI Models</span>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="stat-item">
+                    <i class="fas fa-chart-line text-success"></i>
+                    <span class="stat-label">Độ chính xác</span>
+                    <span class="stat-value">95%+</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+            
+            {% if result.message %}
+            <div class="technical-details mt-3">
+              <div class="details-toggle">
+                <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#technicalDetails">
+                  <i class="fas fa-cog me-1"></i>Chi tiết kỹ thuật
+                  <i class="fas fa-chevron-down ms-1"></i>
+                </button>
+              </div>
+              <div class="collapse mt-2" id="technicalDetails">
+                <div class="card card-body bg-light">
+                  <small class="text-muted">{{ result.message }}</small>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Tips Section -->
+    <div class="card mt-4 border-info">
+      <div class="card-header bg-info text-white">
+        <h6 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Mẹo sử dụng</h6>
+      </div>
+      <div class="card-body">
+        <ul class="mb-0">
+          <li><strong>Model 1:</strong> Phát hiện tin giả dựa trên phân tích ngôn ngữ và cấu trúc văn bản</li>
+          <li><strong>Model 2:</strong> Tóm tắt nội dung tin tức bằng thuật toán LDA (Latent Dirichlet Allocation)</li>
+          <li><strong>Model 3:</strong> Phân tích cảm xúc sẽ được ra mắt trong phiên bản tiếp theo</li>
+          <li>Nhập nội dung tin tức đầy đủ để có kết quả chính xác nhất từ tất cả các model</li>
+          <li>Kết quả phân tích chỉ mang tính tham khảo, nên đối chiếu với nhiều nguồn khác</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+  document
+    .getElementById("analysisForm")
+    .addEventListener("submit", function () {
+      const btn = document.getElementById("analyzeBtn");
+      btn.innerHTML =
+        '<i class="fas fa-spinner fa-spin me-2"></i>Đang phân tích...';
+      btn.disabled = true;
+    });
+</script>
+{% endblock %}
+
