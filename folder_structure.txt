@@ -1,0 +1,100 @@
+.
+├── analyzer
+│   ├── __init__.py
+│   ├── admin.py
+│   ├── apps.py
+│   ├── forms.py
+│   ├── migrations
+│   │   ├── 0001_initial.py
+│   │   └── __init__.py
+│   ├── ml_utils.py
+│   ├── models.py
+│   ├── templatetags
+│   │   ├── __init__.py
+│   │   └── analyzer_extras.py
+│   ├── tests.py
+│   ├── urls.py
+│   └── views.py
+├── clean_news.csv
+├── crawl2.ipynb
+├── folder_structure.txt
+├── manage.py
+├── newsanalyzer
+│   ├── __init__.py
+│   ├── asgi.py
+│   ├── settings.py
+│   ├── urls.py
+│   └── wsgi.py
+├── requirements.txt
+├── static
+│   ├── css
+│   │   ├── brain-animation.css
+│   │   ├── homepage-compact.css
+│   │   ├── styles.css
+│   │   └── thynk-styles.css
+│   ├── img
+│   │   └── hero.png
+│   └── js
+│       └── app.js
+├── templates
+│   ├── analyzer
+│   │   ├── about.html
+│   │   ├── analyze.html
+│   │   ├── home.html
+│   │   └── stats.html
+│   └── base.html
+├── training.log
+├── venv
+│   ├── bin
+│   │   ├── Activate.ps1
+│   │   ├── activate
+│   │   ├── activate.csh
+│   │   ├── activate.fish
+│   │   ├── convert-caffe2-to-onnx
+│   │   ├── convert-onnx-to-caffe2
+│   │   ├── datasets-cli
+│   │   ├── f2py
+│   │   ├── fonttools
+│   │   ├── get_gprof
+│   │   ├── get_objgraph
+│   │   ├── hf
+│   │   ├── huggingface-cli
+│   │   ├── isympy
+│   │   ├── nltk
+│   │   ├── normalizer
+│   │   ├── pip
+│   │   ├── pip3
+│   │   ├── pip3.10
+│   │   ├── pyftmerge
+│   │   ├── pyftsubset
+│   │   ├── python -> python3.10
+│   │   ├── python3 -> python3.10
+│   │   ├── python3.10 -> /usr/local/opt/python@3.10/bin/python3.10
+│   │   ├── tiny-agents
+│   │   ├── torchrun
+│   │   ├── tqdm
+│   │   ├── transformers
+│   │   ├── transformers-cli
+│   │   ├── ttx
+│   │   ├── underthesea
+│   │   └── undill
+│   ├── include
+│   ├── lib
+│   │   └── python3.10
+│   ├── pyvenv.cfg
+│   └── share
+│       └── man
+├── views
+│   └── __init__.py
+├── vnexpress_doi-song.json
+├── vnexpress_du-lich.json
+├── vnexpress_giai-tri.json
+├── vnexpress_giao-duc.json
+├── vnexpress_kinh-doanh.json
+├── vnexpress_phap-luat.json
+├── vnexpress_suc-khoe.json
+├── vnexpress_the-gioi.json
+├── vnexpress_the-thao.json
+└── vnexpress_thoi-su.json
+
+19 directories, 79 files
