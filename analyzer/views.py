@@ -9,7 +9,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 from .models import NewsArticle, AnalysisResult
-from .ml_utils import preprocess_text, predict_fake_news, summarize_text, analyze_topic
+from .ml_utils import preprocess_text, predict_fake_news, summarize_text, analyze_topic, analyze_sentiment
 
 
 def fetch_content_from_url(url):
@@ -122,39 +122,49 @@ def analyze(request):
             import time
             start_time = time.time()
 
-            # Model 1: Phân tích tin giả
+            # Model 1: Phân tích cảm xúc
+            sentiment_result = analyze_sentiment(news_text)
+
+            # Model 2: Phân tích tin giả
             fake_news_result = predict_fake_news(news_text)
 
-            # Model 2: Tóm tắt văn bản
+            # Model 3: Tóm tắt văn bản
             summary_result = summarize_text(news_text)
 
-            # Model 3: Phân loại chủ đề
+            # Model 4: Phân loại chủ đề
             topic_result = analyze_topic(news_text)
 
             processing_time = time.time() - start_time
 
-            # Kết hợp kết quả từ 3 model
+            # Kết hợp kết quả từ 4 model
             result = {
-                # Model 1 - Fake News Detection
+                # Model 1 - Sentiment Analysis
+                'sentiment': sentiment_result['sentiment'],
+                'sentiment_confidence': sentiment_result['confidence'],
+                'sentiment_confidence_percent': round(sentiment_result['confidence'] * 100, 1),
+                'sentiment_emoji': sentiment_result['emoji'],
+                'sentiment_id': sentiment_result['sentiment_id'],
+
+                # Model 2 - Fake News Detection
                 'is_fake': fake_news_result['is_fake'],
                 'confidence': fake_news_result['confidence'],
                 'confidence_percent': round(fake_news_result['confidence'] * 100, 1),
 
-                # Model 2 - Text Summarization
+                # Model 3 - Text Summarization
                 'summary': summary_result['summary'],
                 'compression_ratio': summary_result['compression_ratio'],
                 'compression_percent': round(summary_result['compression_ratio'] * 100, 1),
 
-                # Model 3 - Topic Classification
+                # Model 4 - Topic Classification
                 'topic': topic_result['topic'],
                 'topic_confidence': topic_result['confidence'],
                 'topic_confidence_percent': round(topic_result['confidence'] * 100, 1),
                 'topic_id': topic_result['topic_id'],
 
                 # Meta information
-                'message': f"Phân tích: {fake_news_result['message']} • Tóm tắt: {summary_result['message']} • Chủ đề: {topic_result['message']}",
+                'message': f"Cảm xúc: {sentiment_result['message']} • Tin giả: {fake_news_result['message']} • Tóm tắt: {summary_result['message']} • Chủ đề: {topic_result['message']}",
                 'processing_time': round(processing_time, 3),
-                'models_used': ['Fake News Detection', 'Text Summarization', 'Topic Classification']
+                'models_used': ['Sentiment Analysis', 'Fake News Detection', 'Text Summarization', 'Topic Classification']
             }
 
             # Lưu kết quả vào database nếu có URL
@@ -172,15 +182,21 @@ def analyze(request):
 
                     AnalysisResult.objects.create(
                         article=article,
+                        # Sentiment Analysis
+                        sentiment=result['sentiment'],
+                        sentiment_confidence=result['sentiment_confidence'],
+                        # Fake News Detection
                         is_fake_prediction=result['is_fake'],
                         fake_confidence_score=result['confidence'],
+                        # Text Summarization
                         summary=result['summary'],
                         compression_ratio=result['compression_ratio'],
+                        # Topic Classification
                         topic=result['topic'],
                         topic_confidence=result['topic_confidence'],
                         topic_id=result['topic_id'],
                         processing_time=processing_time,
-                        model_version='3.0'  # Cập nhật version vì thêm topic model
+                        model_version='4.0'  # Cập nhật version vì thêm sentiment model
                     )
                 except Exception as db_error:
                     # Nếu có lỗi database, vẫn hiển thị kết quả

@@ -89,7 +89,7 @@
           <!-- Model 1: Sentiment Analysis - Full Width Row -->
           <div class="row g-4 mb-4">
             <div class="col-12">
-              <div class="model-result-card coming-soon-full">
+              <div class="model-result-card active-model">
                 <div class="model-header">
                   <div
                     class="d-flex justify-content-between align-items-center"
@@ -100,33 +100,51 @@
                         >Model 1: Phân tích Cảm xúc</span
                       >
                     </div>
-                    <span class="model-status badge bg-warning">
-                      <i class="fas fa-clock me-1"></i>Sắp ra mắt
+                    <span class="model-status badge bg-success">
+                      <i class="fas fa-check-circle me-1"></i>Hoạt động
                     </span>
                   </div>
                 </div>
                 <div class="model-content">
-                  <div class="coming-soon-content">
-                    <p class="mb-2">
-                      <i class="fas fa-rocket me-2 text-warning"></i>
-                      Model phân tích cảm xúc sẽ có khả năng xác định tone cảm
-                      xúc của tin tức (tích cực, tiêu cực, trung tính)
-                    </p>
-                    <div class="feature-preview">
-                      <span class="badge bg-light text-dark me-2"
-                        >😊 Tích cực</span
-                      >
-                      <span class="badge bg-light text-dark me-2"
-                        >😢 Tiêu cực</span
-                      >
-                      <span class="badge bg-light text-dark me-2"
-                        >😐 Trung tính</span
-                      >
-                      <span class="badge bg-light text-dark"
-                        >📊 Độ chính xác cao</span
+                  {% if result.sentiment %}
+                  <div class="result-main mb-3">
+                    <div class="result-indicator 
+                      {% if result.sentiment == 'tích cực' %}success
+                      {% elif result.sentiment == 'tiêu cực' %}danger  
+                      {% else %}secondary{% endif %}">
+                      <i class="fas fa-smile"></i>
+                      <span class="result-label">{{ result.sentiment_emoji }} {{ result.sentiment|capfirst }}</span>
+                      <span class="result-confidence"
+                        >{{ result.sentiment_confidence_percent }}%</span
                       >
                     </div>
                   </div>
+                  <div class="confidence-details">
+                    <div
+                      class="d-flex justify-content-between align-items-center mb-1"
+                    >
+                      <small class="text-muted">Độ tin cậy:</small>
+                      <small class="text-muted"
+                        >{{ result.sentiment_confidence_percent }}%</small
+                      >
+                    </div>
+                    <div class="progress" style="height: 8px">
+                      <div
+                        class="progress-bar {% if result.sentiment_confidence >= 0.8 %}bg-success{% elif result.sentiment_confidence >= 0.6 %}bg-warning{% else %}bg-info{% endif %}"
+                        role="progressbar"
+                        style="width: {{ result.sentiment_confidence_percent }}%"
+                      ></div>
+                    </div>
+                  </div>
+                  {% else %}
+                  <div class="result-main">
+                    <div class="result-indicator secondary">
+                      <i class="fas fa-clock"></i>
+                      <span class="result-label">Chưa phân tích</span>
+                      <span class="result-confidence">Đang xử lý...</span>
+                    </div>
+                  </div>
+                  {% endif %}
                 </div>
               </div>
             </div>
@@ -247,6 +265,68 @@
                 </div>
               </div>
             </div>
+          </div>
+
+          <!-- Model 4: Topic Classification - Full Width Row -->
+          <div class="row g-4 mb-4">
+            <div class="col-12">
+              <div class="model-result-card active-model">
+                <div class="model-header">
+                  <div
+                    class="d-flex justify-content-between align-items-center"
+                  >
+                    <div>
+                      <i class="fas fa-tags me-2 text-success"></i>
+                      <span class="model-title"
+                        >Model 4: Phân loại Chủ đề</span
+                      >
+                    </div>
+                    <span class="model-status badge bg-success">
+                      <i class="fas fa-check-circle me-1"></i>Hoạt động
+                    </span>
+                  </div>
+                </div>
+                <div class="model-content">
+                  {% if result.topic %}
+                  <div class="result-main mb-3">
+                    <div class="result-indicator info">
+                      <i class="fas fa-tag"></i>
+                      <span class="result-label">{{ result.topic }}</span>
+                      <span class="result-confidence"
+                        >{{ result.topic_confidence_percent }}%</span
+                      >
+                    </div>
+                  </div>
+                  <div class="confidence-details">
+                    <div
+                      class="d-flex justify-content-between align-items-center mb-1"
+                    >
+                      <small class="text-muted">Độ tin cậy:</small>
+                      <small class="text-muted"
+                        >{{ result.topic_confidence_percent }}%</small
+                      >
+                    </div>
+                    <div class="progress" style="height: 8px">
+                      <div
+                        class="progress-bar {% if result.topic_confidence >= 0.8 %}bg-success{% elif result.topic_confidence >= 0.6 %}bg-warning{% else %}bg-info{% endif %}"
+                        role="progressbar"
+                        style="width: {{ result.topic_confidence_percent }}%"
+                      ></div>
+                    </div>
+                  </div>
+                  {% else %}
+                  <div class="result-main">
+                    <div class="result-indicator secondary">
+                      <i class="fas fa-clock"></i>
+                      <span class="result-label">Chưa phân loại</span>
+                      <span class="result-confidence">Đang xử lý...</span>
+                    </div>
+                  </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
 
             <!-- Overall Assessment -->
             <div class="overall-assessment">
@@ -328,7 +408,7 @@
                       <div class="stat-item">
                         <i class="fas fa-microchip text-info"></i>
                         <span class="stat-label">Models sử dụng</span>
-                        <span class="stat-value">2 AI Models</span>
+                        <span class="stat-value">4 AI Models</span>
                       </div>
                     </div>
                     <div class="col-md-4">
@@ -380,8 +460,8 @@
                 thống sẽ tự động lấy nội dung và phân tích
               </li>
               <li>
-                <strong>Model 1:</strong> Phân tích cảm xúc sẽ được ra mắt trong
-                phiên bản tiếp theo (tích cực, tiêu cực, trung tính)
+                <strong>Model 1:</strong> Phân tích cảm xúc sử dụng RoBERTa model 
+                (tích cực, tiêu cực, trung tính) với độ chính xác cao
               </li>
               <li>
                 <strong>Model 2:</strong> Phát hiện tin giả dựa trên phân tích
@@ -389,6 +469,10 @@
               </li>
               <li>
                 <strong>Model 3:</strong> Tóm tắt nội dung tin tức bằng thuật
+                toán thông minh
+              </li>
+              <li>
+                <strong>Model 4:</strong> Phân loại chủ đề tin tức bằng thuật
                 toán LDA (Latent Dirichlet Allocation)
               </li>
               <li>
