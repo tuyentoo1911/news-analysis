@@ -1,0 +1,12 @@
+Topic 0: bệnh, thể, các, cơ, người, không, chất, khi, hoặc, ăn, là, sĩ, cho, thường, bác
+Topic 1: mỹ, ông, cho, không, đã, một, các, là, với, này, khi, thống, được, trump, ngày
+Topic 2: không, là, bị, án, đề, được, cho, một, câu, các, với, học, để, này, đã
+Topic 3: công, các, người, ai, cho, một, thể, dụng, với, được, động, hình, trên, năng, ra
+Topic 4: trận, đội, bóng, thủ, đấu, là, với, khi, hai, anh, giải, thắng, sân, một, kết
+Topic 5: tôi, không, người, một, là, con, khi, nhưng, để, làm, cho, nhà, anh, lại, vì
+Topic 6: với, là, cho, giá, các, hơn, nước, không, độ, một, được, đồng, từ, bản, khi
+Topic 7: học, sinh, thi, trường, điểm, đại, năm, các, là, viên, với, công, thí, giáo, được
+Topic 8: xe, người, bị, đường, một, khi, trên, an, máy, đi, không, vào, sau, sát, đã
+Topic 9: công, các, doanh, chính, cho, với, hàng, đồng, định, được, là, đầu, số, kinh, năm
+Topic 10: khách, là, du, các, được, ảnh, với, đến, từ, một, những, năm, diễn, người, nhiều
+Topic 11: tỉnh, thành, công, bay, các, hành, đồng, quốc, bộ, trung, tại, tàu, từ, năm, được
