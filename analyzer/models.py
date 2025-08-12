@@ -30,7 +30,12 @@ class AnalysisResult(models.Model):
     summary = models.TextField(blank=True, null=True)
     compression_ratio = models.FloatField(blank=True, null=True)
     
-    # Model 3: Sentiment Analysis (Future)
+    # Model 3: Topic Classification
+    topic = models.CharField(max_length=50, blank=True, null=True)
+    topic_confidence = models.FloatField(blank=True, null=True)
+    topic_id = models.IntegerField(blank=True, null=True)
+    
+    # Model 4: Sentiment Analysis (Future)
     sentiment = models.CharField(max_length=20, blank=True, null=True)
     sentiment_confidence = models.FloatField(blank=True, null=True)
     

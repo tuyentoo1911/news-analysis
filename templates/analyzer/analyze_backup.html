@@ -21,9 +21,9 @@
   </div>
 </div>
 
-<div class="container-fluid mt-5">
+<div class="container mt-5">
   <div class="row">
-    <div class="col-lg-10 mx-auto">
+    <div class="col-lg-8 mx-auto">
       <!-- Analysis Form -->
       <div class="card shadow">
         <div class="card-body">
@@ -159,7 +159,7 @@
                       <i class="fas fa-exclamation-triangle"></i>
                       <span class="result-label">Tin giả</span>
                       <span class="result-confidence"
-                        >{% widthratio result.confidence 1 100 %}%</span
+                        >{{ result.confidence_percent }}%</span
                       >
                     </div>
                     {% else %}
@@ -167,7 +167,7 @@
                       <i class="fas fa-check-circle"></i>
                       <span class="result-label">Tin thật</span>
                       <span class="result-confidence"
-                        >{% widthratio result.confidence 1 100 %}%</span
+                        >{{ result.confidence_percent }}%</span
                       >
                     </div>
                     {% endif %}
@@ -177,14 +177,16 @@
                       class="d-flex justify-content-between align-items-center mb-1"
                     >
                       <small class="text-muted">Độ tin cậy:</small>
-                      <small class="text-muted">{% widthratio result.confidence 1 100 %}%</small
+                      <small class="text-muted"
+                        >{{ result.confidence|multiply:100|floatformat:1
+                        }}%</small
                       >
                     </div>
                     <div class="progress" style="height: 8px">
                       <div
                         class="progress-bar {% if result.confidence >= 0.8 %}bg-success{% elif result.confidence >= 0.6 %}bg-warning{% else %}bg-danger{% endif %}"
                         role="progressbar"
-                        style="width: {% widthratio result.confidence 1 100 %}%"
+                        style="width: {{ result.confidence_percent }}%"
                       ></div>
                     </div>
                   </div>
@@ -215,7 +217,7 @@
                       <i class="fas fa-file-alt"></i>
                       <span class="result-label">Đã tóm tắt</span>
                       <span class="result-confidence"
-                        >{% widthratio result.compression_ratio 1 100 %}% rút gọn</span
+                        >{{ result.compression_percent }}% rút gọn</span
                       >
                     </div>
                   </div>
@@ -229,7 +231,7 @@
                     <div class="summary-stats mt-2">
                       <small class="text-muted">
                         <i class="fas fa-chart-line me-1"></i>
-                        Độ rút gọn: {% widthratio result.compression_ratio 1 100 %}%
+                        Độ rút gọn: {{ result.compression_percent }}%
                       </small>
                     </div>
                   </div>
@@ -238,71 +240,6 @@
                     <div class="result-indicator secondary">
                       <i class="fas fa-clock"></i>
                       <span class="result-label">Chưa tóm tắt</span>
-                      <span class="result-confidence">Đang xử lý...</span>
-                    </div>
-                  </div>
-                  {% endif %}
-                </div>
-              </div>
-            </div>
-
-            <!-- Model 4: Topic Classification -->
-            <div class="col-12 mb-4">
-              <div class="model-result-card active-model">
-                <div class="model-header">
-                  <div
-                    class="d-flex justify-content-between align-items-center"
-                  >
-                    <div>
-                      <i class="fas fa-tags me-2 text-warning"></i>
-                      <span class="model-title">Model 4: Phân loại Chủ đề</span>
-                    </div>
-                    <span class="model-status badge bg-success">
-                      <i class="fas fa-check-circle me-1"></i>Hoạt động
-                    </span>
-                  </div>
-                </div>
-                <div class="model-content">
-                  {% if result.topic %}
-                  <div class="result-main mb-3">
-                    <div class="result-indicator warning">
-                      <i class="fas fa-tag"></i>
-                      <span class="result-label">{{ result.topic }}</span>
-                      <span class="result-confidence">{% widthratio result.topic_confidence 1 100 %}% độ tin cậy</span>
-                    </div>
-                  </div>
-                  <div class="topic-details">
-                    <div class="topic-header mb-2">
-                      <small class="text-muted fw-bold">🏷️ Phân loại chủ đề:</small>
-                    </div>
-                    <div class="topic-info">
-                      <p class="mb-2">
-                        Hệ thống AI phân loại tin tức này thuộc chủ đề:
-                        <strong class="text-warning">{{ result.topic }}</strong>
-                      </p>
-                      <div class="confidence-details">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                          <small class="text-muted">Độ tin cậy phân loại:</small>
-                          <small class="text-muted">{% widthratio result.topic_confidence 1 100 %}%</small>
-                        </div>
-                        <div class="progress" style="height: 8px; background-color: #e9ecef; border-radius: 0.375rem; overflow: hidden;">
-                          <div
-                            class="progress-bar {% if result.topic_confidence >= 0.8 %}bg-success{% elif result.topic_confidence >= 0.6 %}bg-warning{% else %}bg-danger{% endif %}"
-                            role="progressbar"
-                            style="width: {% widthratio result.topic_confidence 1 100 %}%; {% if result.topic_confidence >= 0.8 %}background-color: #198754 !important;{% elif result.topic_confidence >= 0.6 %}background-color: #ffc107 !important; color: #000;{% else %}background-color: #dc3545 !important;{% endif %}"
-                            aria-valuenow="{% widthratio result.topic_confidence 1 100 %}"
-                            aria-valuemin="0"
-                            aria-valuemax="100"
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  {% else %}
-                  <div class="result-main">
-                    <div class="result-indicator secondary">
-                      <i class="fas fa-clock"></i>
-                      <span class="result-label">Chưa phân loại</span>
                       <span class="result-confidence">Đang xử lý...</span>
                     </div>
                   </div>
@@ -336,8 +273,7 @@
                       <p class="mb-2">
                         Hệ thống AI đánh giá tin tức này có
                         <strong
-                          >{% widthratio result.confidence 1 100 %}%
-                          khả năng</strong
+                          >{{ result.confidence_percent }}% khả năng</strong
                         >
                         là tin giả.
                       </p>
@@ -362,8 +298,7 @@
                       <p class="mb-2">
                         Hệ thống AI đánh giá tin tức này có
                         <strong
-                          >{% widthratio result.confidence 1 100 %}%
-                          độ tin cậy</strong
+                          >{{ result.confidence_percent }}% độ tin cậy</strong
                         >.
                       </p>
                       <small class="text-muted">
@@ -393,7 +328,7 @@
                       <div class="stat-item">
                         <i class="fas fa-microchip text-info"></i>
                         <span class="stat-label">Models sử dụng</span>
-                        <span class="stat-value">3 AI Models</span>
+                        <span class="stat-value">2 AI Models</span>
                       </div>
                     </div>
                     <div class="col-md-4">
@@ -455,10 +390,6 @@
               <li>
                 <strong>Model 3:</strong> Tóm tắt nội dung tin tức bằng thuật
                 toán LDA (Latent Dirichlet Allocation)
-              </li>
-              <li>
-                <strong>Model 4:</strong> Phân loại chủ đề tin tức (Sức khỏe, 
-                Chính trị, Kinh tế, Thể thao, Giải trí, v.v.)
               </li>
               <li>
                 <strong>Lưu ý:</strong> Hỗ trợ hầu hết các trang tin tức Việt

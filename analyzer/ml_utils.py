@@ -200,19 +200,94 @@ def summarize_text(text):
 
 def analyze_topic(text):
     """
-    Phân tích chủ đề của văn bản
+    Phân tích chủ đề của văn bản sử dụng LDA model
+    """
+    try:
+        import joblib
+        import numpy as np
+        import os
+        import json
+        
+        # Đường dẫn đến model
+        model_dir = os.path.join('ml_models', 'topic_model')
+        lda_model_path = os.path.join(model_dir, 'lda_model.joblib')
+        vectorizer_path = os.path.join(model_dir, 'vectorizer_bow.joblib')
+        topics_path = os.path.join(model_dir, 'topics.json')
+        
+        # Kiểm tra file tồn tại
+        if not all(os.path.exists(path) for path in [lda_model_path, vectorizer_path, topics_path]):
+            return fallback_topic_analysis(text)
+        
+        # Load model và vectorizer
+        lda_model = joblib.load(lda_model_path)
+        vectorizer = joblib.load(vectorizer_path)
+        
+        # Load topic mapping
+        with open(topics_path, 'r', encoding='utf-8') as f:
+            topic_keywords = json.load(f)
+        
+        # Preprocess text
+        processed_text = preprocess_text(text)
+        
+        # Transform text to vector
+        text_vector = vectorizer.transform([processed_text])
+        
+        # Predict topic probabilities
+        topic_probs = lda_model.transform(text_vector)[0]
+        
+        # Lấy topic có xác suất cao nhất
+        dominant_topic = np.argmax(topic_probs)
+        confidence = topic_probs[dominant_topic]
+        
+        # Map topic số thành tên chủ đề dựa trên keywords
+        topic_names = {
+            '0': 'Sức khỏe',      # bệnh, thể, cơ, bác sĩ
+            '1': 'Chính trị',     # mỹ, ông, trump, thống
+            '2': 'Giáo dục',      # án, đề, học
+            '3': 'Công nghệ',     # công, ai, dụng, năng
+            '4': 'Thể thao',      # trận, đội, bóng, thủ
+            '5': 'Đời sống',      # tôi, người, con, nhà
+            '6': 'Kinh tế',       # giá, nước, đồng, bản
+            '7': 'Giáo dục',      # học, sinh, thi, trường
+            '8': 'Giao thông',    # xe, người, đường, an
+            '9': 'Kinh tế',       # công, doanh, đầu, kinh
+            '10': 'Du lịch',      # khách, du, ảnh, diễn
+            '11': 'Thời sự'       # tỉnh, thành, công, bay
+        }
+        
+        topic_name = topic_names.get(str(dominant_topic), 'Không xác định')
+        
+        return {
+            'topic': topic_name,
+            'confidence': float(confidence),
+            'topic_id': dominant_topic,
+            'message': f'Phân loại thành công với độ tin cậy {confidence*100:.1f}%'
+        }
+        
+    except Exception as e:
+        print(f"Error in LDA topic analysis: {e}")
+        return fallback_topic_analysis(text)
+
+
+def fallback_topic_analysis(text):
+    """
+    Phân tích chủ đề dự phòng bằng keyword matching
     """
     try:
         processed_text = preprocess_text(text)
         
         # Từ khóa cho các chủ đề
         topic_keywords = {
-            'Chính trị': ['chính phủ', 'bộ trưởng', 'quốc hội', 'thủ tướng', 'chủ tịch', 'đảng', 'chính trị'],
-            'Kinh tế': ['kinh tế', 'thị trường', 'đầu tư', 'chứng khoán', 'ngân hàng', 'tài chính', 'doanh nghiệp'],
-            'Thể thao': ['bóng đá', 'thể thao', 'vận động viên', 'world cup', 'sea games', 'olympic'],
+            'Chính trị': ['chính phủ', 'bộ trưởng', 'quốc hội', 'thủ tướng', 'chủ tịch', 'đảng', 'chính trị', 'mỹ', 'trump'],
+            'Kinh tế': ['kinh tế', 'thị trường', 'đầu tư', 'chứng khoán', 'ngân hàng', 'tài chính', 'doanh nghiệp', 'giá', 'đồng'],
+            'Thể thao': ['bóng đá', 'thể thao', 'vận động viên', 'world cup', 'sea games', 'olympic', 'trận', 'đội', 'thủ'],
             'Giải trí': ['nghệ sĩ', 'ca sĩ', 'diễn viên', 'phim', 'âm nhạc', 'showbiz'],
             'Công nghệ': ['công nghệ', 'smartphone', 'internet', 'ai', 'robot', 'ứng dụng'],
-            'Sức khỏe': ['sức khỏe', 'bệnh viện', 'bác sĩ', 'thuốc', 'y tế', 'covid']
+            'Sức khỏe': ['sức khỏe', 'bệnh viện', 'bác sĩ', 'thuốc', 'y tế', 'covid', 'bệnh'],
+            'Giáo dục': ['học', 'sinh', 'thi', 'trường', 'điểm', 'đại học', 'giáo dục'],
+            'Giao thông': ['xe', 'đường', 'tai nạn', 'giao thông', 'máy'],
+            'Du lịch': ['du lịch', 'khách', 'điểm đến', 'tour'],
+            'Đời sống': ['gia đình', 'con', 'nhà', 'cuộc sống']
         }
         
         topic_scores = {}
@@ -223,10 +298,29 @@ def analyze_topic(text):
                 topic_scores[topic] = score
         
         if topic_scores:
-            return max(topic_scores, key=topic_scores.get)
+            best_topic = max(topic_scores, key=topic_scores.get)
+            max_score = topic_scores[best_topic]
+            confidence = min(max_score / 10.0, 1.0)  # Normalize confidence
+            
+            return {
+                'topic': best_topic,
+                'confidence': confidence,
+                'topic_id': -1,
+                'message': f'Phân loại bằng keywords với {max_score} từ khóa khớp'
+            }
         else:
-            return 'Không xác định'
+            return {
+                'topic': 'Không xác định',
+                'confidence': 0.0,
+                'topic_id': -1,
+                'message': 'Không tìm thấy từ khóa phù hợp'
+            }
             
     except Exception as e:
-        return 'Không xác định'
+        return {
+            'topic': 'Không xác định',
+            'confidence': 0.0,
+            'topic_id': -1,
+            'message': f'Lỗi phân tích: {str(e)}'
+        }
 
