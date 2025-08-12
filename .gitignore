@@ -1,0 +1,9 @@
+best_model/model.safetensors
+best_model/
+
+venv/
+__pycache__/
+*.pyc
+saved_models/
+data/
+.ipynb_checkpoints/
