@@ -1,9 +1,35 @@
-best_model/model.safetensors
+# ===== ML Models (large files) =====
 best_model/
+best_model/model.safetensors
+ml_models/
+*.pkl
+*.joblib
+*.h5
+*.hdf5
+*.model
+*.bin
 
-venv/
+# ===== Python cache files =====
 __pycache__/
 *.pyc
-saved_models/
-data/
-.ipynb_checkpoints/
+*.pyo
+
+# ===== Virtual environment =====
+venv/
+.venv/
+.env
+
+# ===== Django =====
+db.sqlite3
+*.log
+
+# ===== IDE settings =====
+.vscode/
+.idea/
+
+# ===== OS files =====
+.DS_Store
+Thumbs.db
+
+# ===== Temporary files =====
+*.tmp
