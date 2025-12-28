@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Giới thiệu - THYNK UNLIMITED{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-8 mx-auto">
+    <h2 class="text-center mb-4">Giới thiệu về News Analyzer</h2>
+    <p class="text-center text-muted mb-5">
+      Hệ thống phân tích tin tức thông minh sử dụng AI
+    </p>
+
+    <!-- About Section -->
+    <div class="card shadow mb-4">
+      <div class="card-body">
+        <h4 class="text-primary mb-3">
+          <i class="fas fa-bullseye me-2"></i>Mục tiêu
+        </h4>
+        <p>
+          News Analyzer được phát triển với mục tiêu giúp người dùng phân biệt
+          tin tức thật và tin giả trong thời đại thông tin bùng nổ. Hệ thống sử
+          dụng các thuật toán machine learning tiên tiến để phân tích nội dung
+          tin tức và đưa ra đánh giá về độ tin cậy.
+        </p>
+      </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="card shadow mb-4">
+      <div class="card-body">
+        <h4 class="text-success mb-3">
+          <i class="fas fa-cogs me-2"></i>Tính năng chính
+        </h4>
+        <div class="row">
+          <div class="col-md-6">
+            <ul class="list-unstyled">
+              <li class="mb-2">
+                <i class="fas fa-check text-success me-2"></i>
+                Phát hiện tin giả với độ chính xác cao
+              </li>
+              <li class="mb-2">
+                <i class="fas fa-check text-success me-2"></i>
+                Phân tích nội dung bằng AI
+              </li>
+              <li class="mb-2">
+                <i class="fas fa-check text-success me-2"></i>
+                Giao diện thân thiện, dễ sử dụng
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <ul class="list-unstyled">
+              <li class="mb-2">
+                <i class="fas fa-check text-success me-2"></i>
+                Thống kê chi tiết về kết quả
+              </li>
+              <li class="mb-2">
+                <i class="fas fa-check text-success me-2"></i>
+                Hỗ trợ tiếng Việt tối ưu
+              </li>
+              <li class="mb-2">
+                <i class="fas fa-check text-success me-2"></i>
+                Cập nhật mô hình liên tục
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Technology Section -->
+    <div class="card shadow mb-4">
+      <div class="card-body">
+        <h4 class="text-info mb-3">
+          <i class="fas fa-microchip me-2"></i>Công nghệ
+        </h4>
+        <p>Hệ thống được xây dựng trên nền tảng công nghệ hiện đại:</p>
+        <div class="row">
+          <div class="col-md-6">
+            <h6><i class="fab fa-python me-2"></i>Backend</h6>
+            <ul>
+              <li>Django Framework</li>
+              <li>Python Machine Learning</li>
+              <li>Natural Language Processing</li>
+              <li>SQLite Database</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h6><i class="fab fa-html5 me-2"></i>Frontend</h6>
+            <ul>
+              <li>Bootstrap 5</li>
+              <li>JavaScript ES6+</li>
+              <li>Chart.js</li>
+              <li>Font Awesome Icons</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- How it works -->
+    <div class="card shadow mb-4">
+      <div class="card-body">
+        <h4 class="text-warning mb-3">
+          <i class="fas fa-question-circle me-2"></i>Cách thức hoạt động
+        </h4>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="process-step mb-3">
+              <div class="d-flex align-items-center">
+                <span
+                  class="badge bg-primary rounded-circle me-3"
+                  style="
+                    width: 30px;
+                    height: 30px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                  "
+                  >1</span
+                >
+                <div>
+                  <h6 class="mb-1">Tiền xử lý văn bản</h6>
+                  <p class="text-muted mb-0">
+                    Loại bỏ ký tự đặc biệt, chuẩn hóa văn bản
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="process-step mb-3">
+              <div class="d-flex align-items-center">
+                <span
+                  class="badge bg-primary rounded-circle me-3"
+                  style="
+                    width: 30px;
+                    height: 30px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                  "
+                  >2</span
+                >
+                <div>
+                  <h6 class="mb-1">Phân tích ngữ nghĩa</h6>
+                  <p class="text-muted mb-0">
+                    Sử dụng mô hình AI để hiểu nội dung
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="process-step mb-3">
+              <div class="d-flex align-items-center">
+                <span
+                  class="badge bg-primary rounded-circle me-3"
+                  style="
+                    width: 30px;
+                    height: 30px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                  "
+                  >3</span
+                >
+                <div>
+                  <h6 class="mb-1">Đánh giá độ tin cậy</h6>
+                  <p class="text-muted mb-0">
+                    Tính toán xác suất tin tức là thật hay giả
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="process-step">
+              <div class="d-flex align-items-center">
+                <span
+                  class="badge bg-primary rounded-circle me-3"
+                  style="
+                    width: 30px;
+                    height: 30px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                  "
+                  >4</span
+                >
+                <div>
+                  <h6 class="mb-1">Trả về kết quả</h6>
+                  <p class="text-muted mb-0">
+                    Hiển thị kết quả với độ tin cậy và khuyến nghị
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Section -->
+    <div class="card shadow">
+      <div class="card-body text-center">
+        <h4 class="text-dark mb-3">
+          <i class="fas fa-envelope me-2"></i>Liên hệ
+        </h4>
+        <p class="text-muted">
+          Nếu bạn có thắc mắc hoặc đóng góp ý kiến, hãy liên hệ với chúng tôi.
+        </p>
+        <div class="mt-3">
+          <a
+            href="mailto:contact@newsanalyzer.com"
+            class="btn btn-outline-primary me-2"
+          >
+            <i class="fas fa-envelope me-1"></i>Email
+          </a>
+          <a href="#" class="btn btn-outline-info">
+            <i class="fab fa-github me-1"></i>GitHub
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

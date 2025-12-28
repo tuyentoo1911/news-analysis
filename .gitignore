@@ -1,2 +1,40 @@
+<<<<<<< HEAD
 best_model/model.safetensors
 best_model/
+=======
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+venv/
+.venv/
+.env
+
+# Django database (sẽ tự tạo lại)
+db.sqlite3
+
+# Django logs
+*.log
+
+# IDE settings
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+
+# ML Models (quá lớn để chia sẻ)
+ml_models/
+*.pkl
+*.joblib
+*.h5
+*.hdf5
+*.model
+*.bin
+>>>>>>> WebNewsAnalytics
