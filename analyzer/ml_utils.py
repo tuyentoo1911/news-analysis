@@ -15,16 +15,12 @@ def preprocess_text(text):
     if not text or not isinstance(text, str):
         return ""
 
-    # Chuyển về chữ thường
     text = text.lower()
 
-    # Loại bỏ dấu câu
     text = text.translate(str.maketrans('', '', string.punctuation))
 
-    # Loại bỏ số
     text = re.sub(r'\d+', '', text)
 
-    # Loại bỏ khoảng trắng thừa
     text = ' '.join(text.split())
 
     return text
@@ -32,10 +28,7 @@ def preprocess_text(text):
 
 def predict_fake_news(text):
     """
-    THUẬT TOÁN PHÂN TÍCH TIN GIẢ ĐƯỢC CẢI TIẾN
-    - Giảm bias, confidence thực tế hơn
-    - Thêm nhiều yếu tố phân tích
-    - Logic cân bằng hơn
+    Phân tích tin giả sử dụng RoBERTa model được fine-tuned
     """
     try:
         # Kiểm tra đầu vào
@@ -48,6 +41,134 @@ def predict_fake_news(text):
                 'analysis_details': {}
             }
 
+        # Đường dẫn đến model
+        model_dir = os.path.join('ml_models', 'fake_real_model')
+
+        # Kiểm tra model tồn tại
+        if not os.path.exists(model_dir):
+            return fallback_fake_news_analysis(text)
+
+        # Load tokenizer và model
+        tokenizer = AutoTokenizer.from_pretrained(model_dir)
+        model = AutoModelForSequenceClassification.from_pretrained(model_dir)
+
+        # Tiền xử lý văn bản
+        processed_text = text.strip()
+        if len(processed_text) > 512:
+            # Cắt văn bản nếu quá dài (RoBERTa có giới hạn 512 tokens)
+            processed_text = processed_text[:512]
+
+        if len(processed_text) < 10:
+            return {
+                'is_fake': False,
+                'confidence': 0.6,
+                'message': 'Văn bản quá ngắn để phân tích chính xác',
+                'processed_text': processed_text,
+                'analysis_details': {'reason': 'text_too_short'}
+            }
+
+        # Tokenize
+        inputs = tokenizer(
+            processed_text,
+            return_tensors="pt",
+            truncation=True,
+            padding=True,
+            max_length=256
+        )
+
+        # Predict
+        with torch.no_grad():
+            outputs = model(**inputs)
+            predictions = torch.nn.functional.softmax(outputs.logits, dim=-1)
+            predicted_class = torch.argmax(predictions, dim=-1).item()
+            confidence = predictions[0][predicted_class].item()
+
+            # Lấy probabilities của cả 2 class
+            prob_class_0 = predictions[0][0].item()
+            prob_class_1 = predictions[0][1].item()
+
+        # Debug info
+        print(f" AI Model: Class 0={prob_class_0:.3f}, Class 1={prob_class_1:.3f} → Predicted: {predicted_class}")
+
+        # KIỂM TRA MODEL BIAS hoặc CONFIDENCE THẤP
+        use_hybrid = False
+
+        if confidence > 0.95 and predicted_class == 0:
+            print(" Model bias cao, sử dụng hybrid approach")
+            use_hybrid = True
+        elif confidence < 0.65:
+            print("  Confidence thấp, sử dụng hybrid approach")
+            use_hybrid = True
+
+        if use_hybrid:
+            # Lấy kết quả từ thuật toán keyword
+            fallback_result = fallback_fake_news_analysis(text)
+
+            ai_fake_score = prob_class_1  # Xác suất model cho FAKE
+            keyword_fake_score = fallback_result['confidence'] if fallback_result['is_fake'] else (1 - fallback_result['confidence'])
+
+            combined_fake_score = (ai_fake_score * 0.35) + (keyword_fake_score * 0.65)
+
+            # Giới hạn confidence tối đa 99%
+            confidence = min(combined_fake_score if combined_fake_score > 0.5 else (1 - combined_fake_score), 0.99)
+
+            # Format % không hiển thị 100
+            ai_pct = min(ai_fake_score * 100, 99)
+            keyword_pct = min(keyword_fake_score * 100, 99)
+
+            if combined_fake_score > 0.5:
+                is_fake = True
+                message = f"Hybrid: Phát hiện tin giả (AI {ai_pct:.0f}% + Keyword {keyword_pct:.0f}%)"
+            else:
+                is_fake = False
+                ai_real_pct = min((1-ai_fake_score) * 100, 99)
+                keyword_real_pct = min((1-keyword_fake_score) * 100, 99)
+                message = f"Hybrid: Xác nhận tin thật (AI {ai_real_pct:.0f}% + Keyword {keyword_real_pct:.0f}%)"
+
+            print(f"   → Hybrid result: is_fake={is_fake}, confidence={confidence:.3f}")
+        else:
+            display_confidence = min(confidence * 100, 99)
+
+            if predicted_class == 0:
+                is_fake = False  # Class 0 = Real news
+                message = f"AI xác nhận tin thật với độ tin cậy {display_confidence:.1f}%"
+            else:
+                is_fake = True   # Class 1 = Fake news
+                message = f"AI phát hiện tin giả với độ tin cậy {display_confidence:.1f}%"
+
+            # Giới hạn confidence lưu vào database
+            confidence = min(confidence, 0.99)
+
+        return {
+            'is_fake': is_fake,
+            'confidence': float(confidence),
+            'message': message,
+            'processed_text': processed_text,
+            'analysis_details': {
+                'model_prediction': predicted_class,
+                'model_confidence': float(confidence),
+                'model_version': 'RoBERTa_fine_tuned'
+            },
+            # Backward compatibility
+            'suspicious_words_found': [],
+            'reliable_indicators_found': [],
+            # Debug info
+            'debug_info': {
+                'text_length': len(text),
+                'processed_length': len(processed_text),
+                'model_type': 'transformer',
+                'algorithm_version': '5.4_roberta_final_0real_1fake'
+            }
+        }
+
+    except Exception as e:
+        print(f"Error in fake news analysis: {e}")
+        return fallback_fake_news_analysis(text)
+
+
+def fallback_fake_news_analysis(text):
+
+    try:
         processed_text = preprocess_text(text)
 
         if not processed_text or len(processed_text.strip()) < 10:
@@ -59,195 +180,113 @@ def predict_fake_news(text):
                 'analysis_details': {'reason': 'text_too_short'}
             }
 
-        # =================================
-        # CÁC CHỈ SỐ PHÂN TÍCH ĐƯỢC CẢI TIẾN
-        # =================================
-
-        analysis_details = {}
-
-        # 1. PHÂN TÍCH TỪ KHÓA ĐÁNG NGỜ (Giảm trọng số)
         suspicious_words = [
-            # Clickbait words
-            'giật gân', 'sốc', 'không thể tin được', 'bí mật', 'khủng khiếp',
+            # Clickbait tiếng Việt
+            'giật gân', 'sốc', 'shock', 'không thể tin được', 'bí mật', 'khủng khiếp',
             'nóng hổi', 'bom tấn', 'độc quyền', 'lạ lùng', 'kinh hoàng',
             'bất ngờ', 'chấn động', 'rúng động', 'gây sốt', 'viral',
-            # Thêm từ tiếng Việt
-            'kinh dị', 'rợn người', 'choáng váng', 'thót tim', 'đỉnh cao',
-            'tuyệt đối', 'nhất định', '100%', 'chắc chắn', 'không ai biết'
+            'kinh dị', 'rợn người', 'choáng váng', 'thót tim',
+            'phát hiện', 'cách kiếm tiền', 'tỷ đồng', 'giảm cân', 'thần tốc',
+            'tuyệt đối', '100%', 'chắc chắn', 'không ai biết', 'bí quyết',
+            'giật mình', 'choáng ngợp', 'không ngờ', 'thần kỳ',
+            # Siêu nhiên / Giả khoa học
+            'siêu năng lực', 'năng lực siêu nhiên', 'hiện tượng lạ', 'khoa học chưa giải thích',
+            'chưa lý giải', 'bí ẩn', 'thần bí', 'kỳ lạ', 'phi thường',
+            'phép màu', 'kỳ diệu', 'ma thuật', 'ảo thuật', 'thần thánh',
+            'ngoài sức tưởng tượng', 'không ai tin', 'triệu lượt xem',
+            'cư dân mạng xôn xao', 'lan truyền chóng mặt', 'gây tranh cãi'
+        ]
+
+        # Chỉ báo tin cậy - cải thiện
+        reliable_indicators = [
+            'nguon tin', 'chính thức', 'thông cáo', 'báo cáo',
+            'nghiên cứu', 'chuyên gia', 'phát ngôn viên', 'cơ quan chức năng',
+            'vnexpress', 'tuoi tre', 'thanh nien', 'vietnamnet', 'dantri',
+            'bo y te', 'bo giao duc', 'thu tuong', 'chinh phu',
+            # Thêm các chỉ báo tin cậy
+            'cap nhat', 'xac nhan',
+            'bac si', 'giao su', 'tien si', 'chuyen gia'
         ]
 
         suspicious_found = [word for word in suspicious_words if word in processed_text]
-        suspicious_score = len(suspicious_found) * 0.08  # GIẢM từ 0.15 xuống 0.08
-        analysis_details['suspicious_words'] = suspicious_found
-
-        # 2. PHÂN TÍCH CHỈ BÁO TIN CẬY (Tăng trọng số)
-        reliable_indicators = [
-            # Nguồn tin chính thức
-            'theo báo', 'nguồn tin', 'chính thức', 'thông cáo', 'báo cáo',
-            'nghiên cứu', 'chuyên gia', 'phát ngôn viên', 'cơ quan chức năng',
-            # Thêm nguồn cụ thể
-            'vnexpress', 'tuổi trẻ', 'thanh niên', 'vietnamnet', 'dantri',
-            'bộ y tế', 'bộ giáo dục', 'thủ tướng', 'chính phủ',
-            'đại học', 'tiến sĩ', 'giáo sư', 'bác sĩ', 'luật sư'
-        ]
-
         reliable_found = [word for word in reliable_indicators if word in processed_text]
-        reliable_score = len(reliable_found) * 0.12  # TĂNG từ 0.1 lên 0.12
-        analysis_details['reliable_indicators'] = reliable_found
 
-        # 3. PHÂN TÍCH CẤU TRÚC VĂN BẢN
-        structure_score = 0
+        # Tính điểm với trọng số cải thiện MẠNH
+        suspicious_score = len(suspicious_found) * 0.25   # TĂNG MẠNH trọng số từ khóa đáng ngờ
+        reliable_score = len(reliable_found) * 0.30      # Tăng trọng số tin cậy
 
-        # Độ dài văn bản
-        text_length = len(processed_text)
-        if text_length < 50:
-            structure_score += 0.15  # Quá ngắn
-        elif text_length < 100:
-            structure_score += 0.08  # Hơi ngắn
-        elif text_length > 2000:
-            structure_score -= 0.05  # Dài = tốt
+        # Phân tích cấu trúc bổ sung
+        structure_bonus = 0
+        text_upper = text.upper()
 
-        # Tỷ lệ dấu chấm than
-        exclamation_count = text.count('!')
-        exclamation_ratio = exclamation_count / len(text) if text else 0
-        if exclamation_ratio > 0.02:  # >2% là quá nhiều
-            structure_score += min(exclamation_ratio * 5, 0.2)
+        # Kiểm tra dấu chấm than nhiều (clickbait)
+        if text.count('!') > 2:
+            structure_bonus += 0.2
 
-        # Tỷ lệ chữ in hoa
-        upper_ratio = sum(1 for c in text if c.isupper()) / len(text) if text else 0
-        if upper_ratio > 0.05:  # >5% là quá nhiều
-            structure_score += min(upper_ratio * 2, 0.15)
+        # Kiểm tra chữ in hoa nhiều
+        if len([c for c in text if c.isupper()]) / len(text) > 0.1:
+            structure_bonus += 0.2
 
-        analysis_details['structure'] = {
-            'length': text_length,
-            'exclamation_ratio': round(exclamation_ratio, 4),
-            'upper_ratio': round(upper_ratio, 4)
-        }
+        if text.count('"') > 3 or text.count('"') > 3:
+            structure_bonus += 0.15
 
-        # 4. PHÂN TÍCH NGÔN NGỮ TÌNH CẢM
-        emotional_words = [
-            'yêu', 'ghét', 'tức giận', 'phẫn nộ', 'căm thù', 'khiếp sợ',
-            'lo lắng', 'hoảng sợ', 'phấn khích', 'hào hứng'
-        ]
-        emotional_score = len([w for w in emotional_words if w in processed_text]) * 0.05
+        if 'triệu lượt' in text.lower() or 'tỷ lượt' in text.lower():
+            structure_bonus += 0.25  # TĂNG MẠNH vì rất dấu hiệu tin giả
 
-        # 5. KIỂM TRA SỐ LIỆU VÀ THÔNG TIN CỤ THỂ
-        has_numbers = bool(re.search(r'\d', text))
-        has_dates = bool(re.search(r'\d{1,2}[/-]\d{1,2}[/-]\d{2,4}', text))
-        has_specific_info = any(indicator in text.lower() for indicator in [
-            'nghiên cứu cho thấy', 'theo thống kê', 'dữ liệu', 'phần trăm', '%'
-        ])
+        # Tính điểm tổng
+        base_score = 0.2  # Giảm base score
+        total_score = base_score + suspicious_score + structure_bonus - reliable_score
 
-        specificity_score = 0
-        if has_numbers:
-            specificity_score -= 0.05
-        if has_dates:
-            specificity_score -= 0.08
-        if has_specific_info:
-            specificity_score -= 0.1
+        # Debug
+        print(f"Keyword Score: suspicious={len(suspicious_found)} ({suspicious_score:.2f}), structure={structure_bonus:.2f}, reliable={len(reliable_found)} (-{reliable_score:.2f}) → total={total_score:.2f}")
 
-        analysis_details['specificity'] = {
-            'has_numbers': has_numbers,
-            'has_dates': has_dates,
-            'has_specific_info': has_specific_info
-        }
-
-        # =================================
-        # TÍNH ĐIỂM TỔNG HỢP (CẢI TIẾN)
-        # =================================
-
-        # Base score bắt đầu từ 0.4 thay vì 0
-        base_score = 0.4
-
-        # Tổng hợp các điểm
-        total_fake_score = (
-            base_score +
-            suspicious_score +
-            structure_score +
-            emotional_score +
-            specificity_score -
-            reliable_score
-        )
-
-        # Thêm yếu tố ngẫu nhiên NHỎ HƠN
-        import random
-        random_factor = random.uniform(-0.05, 0.05)  # GIẢM từ ±0.1 xuống ±0.05
-        total_fake_score += random_factor
-
-        # Chuẩn hóa điểm số với hàm sigmoid để tránh cực trị
-        normalized_score = 1 / (1 + math.exp(-(total_fake_score - 0.5) * 6))
-
-        # =================================
-        # QUYẾT ĐỊNH KẾT QUẢ
-        # =================================
-
-        is_fake = normalized_score > 0.55  # Tăng ngưỡng lên 0.55
-
-        # TÍNH CONFIDENCE THỰC TẾ HƠN
-        if is_fake:
-            # Confidence cho tin giả
-            raw_confidence = normalized_score
-            if raw_confidence > 0.9:
-                confidence = 0.75 + (raw_confidence - 0.9) * 1.5  # Max ~0.9
-            elif raw_confidence > 0.7:
-                confidence = 0.65 + (raw_confidence - 0.7) * 0.5  # 0.65-0.75
-            else:
-                confidence = 0.55 + (raw_confidence - 0.55) * 0.67  # 0.55-0.65
+        if total_score > 0.9:
+            is_fake = True
+            confidence = min(0.85 + (total_score - 0.9) * 0.1, 0.98)
+            message = "Phat hien cuc ky nhieu dau hieu tin gia"
+        elif total_score > 0.7:
+            is_fake = True
+            confidence = 0.75 + (total_score - 0.7) * 0.25
+            message = "Phat hien nhieu dau hieu tin gia ro rang"
+        elif total_score > 0.5:
+            is_fake = True
+            confidence = 0.65 + (total_score - 0.5) * 0.25
+            message = "Phat hien nhieu dau hieu tin gia"
+        elif total_score > 0.35:
+            is_fake = True
+            confidence = 0.60 + (total_score - 0.35) * 0.25
+            message = "Co dau hieu tin gia"
+        elif total_score < 0.1 and reliable_score > 0.2:
+            is_fake = False
+            confidence = min(0.75 + reliable_score * 0.15, 0.92)
+            message = "Co nhieu dau hieu tin cay"
+        elif total_score < 0.25:
+            is_fake = False
+            confidence = 0.65 + (0.25 - total_score) * 0.25
+            message = "It dau hieu dang ngo"
         else:
-            # Confidence cho tin thật
-            raw_confidence = 1 - normalized_score
-            if raw_confidence > 0.8:
-                confidence = 0.7 + (raw_confidence - 0.8) * 1.0   # Max ~0.9
-            elif raw_confidence > 0.6:
-                confidence = 0.6 + (raw_confidence - 0.6) * 0.5   # 0.6-0.7
-            else:
-                confidence = 0.5 + raw_confidence * 0.2            # 0.5-0.6
-
-        # Cap confidence tối đa 0.89
-        confidence = min(confidence, 0.89)
-
-        # Đặc biệt: Nếu không có đủ thông tin, giảm confidence
-        if len(processed_text) < 100 and not reliable_found and not suspicious_found:
-            confidence = max(confidence * 0.7, 0.5)  # Giảm xuống, tối thiểu 0.5
-
-        analysis_details['scoring'] = {
-            'suspicious_score': round(suspicious_score, 3),
-            'reliable_score': round(reliable_score, 3),
-            'structure_score': round(structure_score, 3),
-            'emotional_score': round(emotional_score, 3),
-            'specificity_score': round(specificity_score, 3),
-            'total_fake_score': round(total_fake_score, 3),
-            'normalized_score': round(normalized_score, 3),
-            'random_factor': round(random_factor, 3)
-        }
-
-        # Thông điệp dựa trên kết quả
-        if confidence < 0.6:
-            message = "Độ tin cậy phân tích thấp - cần thêm thông tin"
-        elif is_fake and confidence > 0.8:
-            message = "Có dấu hiệu mạnh của tin giả"
-        elif is_fake:
-            message = "Có một số dấu hiệu đáng ngờ"
-        elif confidence > 0.8:
-            message = "Có vẻ là tin đáng tin cậy"
-        else:
-            message = "Phân tích hoàn tất"
+            is_fake = True
+            confidence = 0.58 + (total_score - 0.25) * 0.15
+            message = "Khong ro rang - phan loai than trong la tin gia"
 
         return {
             'is_fake': is_fake,
-            'confidence': round(confidence, 3),
+            'confidence': confidence,
             'message': message,
             'processed_text': processed_text,
-            'analysis_details': analysis_details,
-            # Backward compatibility
+            'analysis_details': {
+                'suspicious_words': suspicious_found,
+                'reliable_indicators': reliable_found,
+                'suspicious_score': suspicious_score,
+                'reliable_score': reliable_score
+            },
             'suspicious_words_found': suspicious_found,
             'reliable_indicators_found': reliable_found,
-            # Thêm thông tin debug (có thể bỏ trong production)
             'debug_info': {
                 'text_length': len(text),
                 'processed_length': len(processed_text),
-                'decision_threshold': 0.55,
-                'algorithm_version': '2.1_improved'
+                'model_type': 'fallback',
+                'algorithm_version': '5.2_fallback_balanced'
             }
         }
 
@@ -262,9 +301,7 @@ def predict_fake_news(text):
 
 
 def summarize_text(text):
-    """
-    Tóm tắt văn bản tối ưu - gọn gàng và hiệu quả
-    """
+
     try:
         if not text or len(text.strip()) < 80:
             return {
@@ -311,7 +348,6 @@ def summarize_text(text):
 
             scored_sentences.append((sentence, score))
 
-        # Chọn top 30-50% câu tốt nhất
         scored_sentences.sort(key=lambda x: x[1], reverse=True)
         target_count = max(1, min(3, len(sentences) // 3))
 
@@ -329,7 +365,6 @@ def summarize_text(text):
         }
 
     except Exception as e:
-        # Fallback đơn giản
         words = text.split()
         if len(words) > 50:
             summary = ' '.join(words[:30]) + '...'
@@ -346,9 +381,7 @@ def summarize_text(text):
 
 
 def analyze_topic(text):
-    """
-    Phân tích chủ đề của văn bản sử dụng LDA model
-    """
+
     try:
         import joblib
         import numpy as np
@@ -365,18 +398,14 @@ def analyze_topic(text):
         if not all(os.path.exists(path) for path in [lda_model_path, vectorizer_path, topics_path]):
             return fallback_topic_analysis(text)
 
-        # Load model và vectorizer
         lda_model = joblib.load(lda_model_path)
         vectorizer = joblib.load(vectorizer_path)
 
-        # Load topic mapping
         with open(topics_path, 'r', encoding='utf-8') as f:
             topic_keywords = json.load(f)
 
-        # Preprocess text
         processed_text = preprocess_text(text)
 
-        # Transform text to vector
         text_vector = vectorizer.transform([processed_text])
 
         # Predict topic probabilities
@@ -386,20 +415,19 @@ def analyze_topic(text):
         dominant_topic = np.argmax(topic_probs)
         confidence = topic_probs[dominant_topic]
 
-        # Map topic số thành tên chủ đề dựa trên keywords
         topic_names = {
-            '0': 'Sức khỏe',      # bệnh, thể, cơ, bác sĩ
-            '1': 'Chính trị',     # mỹ, ông, trump, thống
-            '2': 'Giáo dục',      # án, đề, học
-            '3': 'Công nghệ',     # công, ai, dụng, năng
-            '4': 'Thể thao',      # trận, đội, bóng, thủ
-            '5': 'Đời sống',      # tôi, người, con, nhà
-            '6': 'Kinh tế',       # giá, nước, đồng, bản
-            '7': 'Giáo dục',      # học, sinh, thi, trường
-            '8': 'Giao thông',    # xe, người, đường, an
-            '9': 'Kinh tế',       # công, doanh, đầu, kinh
-            '10': 'Du lịch',      # khách, du, ảnh, diễn
-            '11': 'Thời sự'       # tỉnh, thành, công, bay
+            '0': 'Sức khỏe',
+            '1': 'Chính trị',
+            '2': 'Giáo dục',
+            '3': 'Công nghệ',
+            '4': 'Thể thao',
+            '5': 'Đời sống',
+            '6': 'Kinh tế',
+            '7': 'Giáo dục',
+            '8': 'Giao thông',
+            '9': 'Kinh tế',
+            '10': 'Du lịch',
+            '11': 'Thời sự'
         }
 
         topic_name = topic_names.get(str(dominant_topic), 'Không xác định')
@@ -477,7 +505,6 @@ def analyze_sentiment(text):
     Phân tích cảm xúc của văn bản sử dụng RoBERTa model
     """
     try:
-        # Đường dẫn đến model
         model_dir = os.path.join('ml_models', 'news_sentiment_pol3')
 
         # Kiểm tra model tồn tại
@@ -491,7 +518,6 @@ def analyze_sentiment(text):
         # Tiền xử lý văn bản
         processed_text = text.strip()
         if len(processed_text) > 512:
-            # Cắt văn bản nếu quá dài (RoBERTa có giới hạn 512 tokens)
             processed_text = processed_text[:512]
 
         # Tokenize

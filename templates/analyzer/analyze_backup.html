@@ -400,7 +400,7 @@
                         <i class="fas fa-clock text-primary"></i>
                         <span class="stat-label">Thời gian xử lý</span>
                         <span class="stat-value"
-                          >{{ result.processing_time }}s</span
+                          >{{ result.processing_time|floatformat:2 }}s</span
                         >
                       </div>
                     </div>
@@ -464,8 +464,8 @@
                 (tích cực, tiêu cực, trung tính) với độ chính xác cao
               </li>
               <li>
-                <strong>Model 2:</strong> Phát hiện tin giả dựa trên phân tích
-                ngôn ngữ và cấu trúc văn bản
+                <strong>Model 2:</strong> Phát hiện tin giả sử dụng RoBERTa model được fine-tuned, 
+                với thuật toán dự phòng thông minh. Quy tắc: confidence < 80% được phân loại là tin giả
               </li>
               <li>
                 <strong>Model 3:</strong> Tóm tắt nội dung tin tức bằng thuật

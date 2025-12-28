@@ -26,52 +26,175 @@
     <div class="col-lg-10 mx-auto">
       <!-- Analysis Form -->
       <div class="card shadow">
+        <div class="card-header bg-light">
+          <h5 class="mb-0">
+            <i class="fas fa-edit me-2"></i>Nhập nội dung cần phân tích
+          </h5>
+        </div>
         <div class="card-body">
-          <form method="post" id="analysisForm">
+          <!-- Input Method Tabs -->
+          <ul class="nav nav-pills nav-justified mb-4" id="inputTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button 
+                class="nav-link active" 
+                id="url-tab" 
+                data-bs-toggle="pill" 
+                data-bs-target="#url-panel" 
+                type="button" 
+                role="tab"
+              >
+                <i class="fas fa-link me-2"></i>URL tin tức
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button 
+                class="nav-link" 
+                id="text-tab" 
+                data-bs-toggle="pill" 
+                data-bs-target="#text-panel" 
+                type="button" 
+                role="tab"
+              >
+                <i class="fas fa-keyboard me-2"></i>Nhập văn bản
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button 
+                class="nav-link" 
+                id="file-tab" 
+                data-bs-toggle="pill" 
+                data-bs-target="#file-panel" 
+                type="button" 
+                role="tab"
+              >
+                <i class="fas fa-file-upload me-2"></i>Upload file .txt
+              </button>
+            </li>
+          </ul>
+
+          <form method="post" enctype="multipart/form-data" id="analysisForm">
             {% csrf_token %}
-            <div class="mb-3">
-              <label for="news_url" class="form-label">URL tin tức</label>
-              <input
-                type="url"
-                class="form-control"
-                id="news_url"
-                name="news_url"
-                placeholder="https://vnexpress.net/your-news-article"
-                value="{% if news_url %}{{ news_url }}{% endif %}"
-              />
-              <div class="form-text">
-                Nhập URL để tự động lấy nội dung bài báo
+            
+            <!-- Tab Content -->
+            <div class="tab-content" id="inputTabContent">
+              
+              <!-- URL Input Panel -->
+              <div class="tab-pane fade show active" id="url-panel" role="tabpanel">
+                <div class="mb-4">
+                  <label for="news_url" class="form-label fw-bold">
+                    <i class="fas fa-globe me-2 text-primary"></i>URL bài báo
+                  </label>
+                  <input
+                    type="url"
+                    class="form-control form-control-lg"
+                    id="news_url"
+                    name="news_url"
+                    placeholder="https://vnexpress.net/tin-tuc-moi-nhat.html"
+                    value="{% if news_url %}{{ news_url }}{% endif %}"
+                  />
+                  <div class="form-text">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Hỗ trợ: VnExpress, Tuổi Trẻ, Thanh Niên, VietnamNet, Dan Tri và hầu hết các trang tin tức Việt Nam
+                  </div>
+                  
+                  <!-- URL Examples -->
+                  <div class="mt-3">
+                    <small class="text-muted fw-bold">Ví dụ URL:</small>
+                    <div class="mt-1">
+                      <button type="button" class="btn btn-outline-secondary btn-sm me-2 mb-1 url-example" 
+                              data-url="https://vnexpress.net/">VnExpress</button>
+                      <button type="button" class="btn btn-outline-secondary btn-sm me-2 mb-1 url-example" 
+                              data-url="https://tuoitre.vn/">Tuổi Trẻ</button>
+                      <button type="button" class="btn btn-outline-secondary btn-sm me-2 mb-1 url-example" 
+                              data-url="https://thanhnien.vn/">Thanh Niên</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Text Input Panel -->
+              <div class="tab-pane fade" id="text-panel" role="tabpanel">
+                <div class="mb-4">
+                  <label for="news_text" class="form-label fw-bold">
+                    <i class="fas fa-edit me-2 text-success"></i>Nội dung tin tức
+                  </label>
+                  <textarea
+                    class="form-control"
+                    id="news_text"
+                    name="news_text"
+                    rows="12"
+                    placeholder="Dán hoặc gõ nội dung bài báo cần phân tích vào đây...
+
+Ví dụ:
+Hôm nay, Bộ Y tế thông báo tình hình dịch bệnh trên toàn quốc đã được kiểm soát tốt. Theo báo cáo từ các bệnh viện, số ca mắc mới giảm đáng kể so với tuần trước..."
+                  >{% if news_text %}{{ news_text }}{% endif %}</textarea>
+                  <div class="form-text">
+                    <i class="fas fa-ruler me-1"></i>
+                    Tối thiểu 50 ký tự. Không có giới hạn tối đa.
+                  </div>
+                  
+                  <!-- Character Counter -->
+                  <div class="mt-2">
+                    <small class="text-muted">
+                      Số ký tự: <span id="charCount">0</span>
+                      <span id="charStatus" class="ms-2"></span>
+                    </small>
+                  </div>
+                </div>
+              </div>
+
+              <!-- File Upload Panel -->
+              <div class="tab-pane fade" id="file-panel" role="tabpanel">
+                <div class="mb-4">
+                  <label for="news_file" class="form-label fw-bold">
+                    <i class="fas fa-file-text me-2 text-info"></i>Upload file văn bản
+                  </label>
+                  <input
+                    type="file"
+                    class="form-control form-control-lg"
+                    id="news_file"
+                    name="news_file"
+                    accept=".txt,.docx,.pdf"
+                  />
+                  <div class="form-text">
+                    <i class="fas fa-upload me-1"></i>
+                    Chấp nhận: .txt, .docx, .pdf (tối đa 10MB)
+                  </div>
+                  
+                  <!-- File Info Display -->
+                  <div id="fileInfo" class="mt-3 p-3 bg-light rounded" style="display: none;">
+                    <div class="d-flex align-items-center">
+                      <i class="fas fa-file-alt me-2 text-primary"></i>
+                      <div>
+                        <div class="fw-bold" id="fileName"></div>
+                        <small class="text-muted" id="fileSize"></small>
+                      </div>
+                      <button type="button" class="btn btn-sm btn-outline-danger ms-auto" id="removeFile">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div class="text-center mb-3">
-              <span class="text-muted">--- HOẶC ---</span>
-            </div>
-
-            <div class="mb-3">
-              <label for="news_text" class="form-label">Nội dung tin tức</label>
-              <textarea
-                class="form-control"
-                id="news_text"
-                name="news_text"
-                rows="8"
-                placeholder="Nhập hoặc dán nội dung tin tức cần phân tích..."
-              >
-{% if news_text %}{{ news_text }}{% endif %}</textarea
-              >
-              <div class="form-text">
-                Tối thiểu 50 ký tự (nếu không nhập URL ở trên)
-              </div>
-            </div>
-
+            <!-- Submit Button -->
             <div class="d-grid">
               <button
                 type="submit"
                 class="btn btn-primary btn-lg"
                 id="analyzeBtn"
               >
-                <i class="fas fa-search me-2"></i>Phân tích ngay
+                <i class="fas fa-brain me-2"></i>
+                <span id="analyzeText">Phân tích bằng AI</span>
               </button>
+            </div>
+
+            <!-- Input Method Indicator -->
+            <div class="mt-3 text-center">
+              <small class="text-muted">
+                <span id="inputMethod">Phương thức: URL tin tức</span>
+              </small>
             </div>
           </form>
         </div>
@@ -391,7 +514,7 @@
                         <i class="fas fa-clock text-primary"></i>
                         <span class="stat-label">Thời gian xử lý</span>
                         <span class="stat-value"
-                          >{{ result.processing_time }}s</span
+                          >{{ result.processing_time|floatformat:2 }}s</span
                         >
                       </div>
                     </div>
@@ -585,38 +708,228 @@
   </style>
 
   <script>
-    document
-      .getElementById("analysisForm")
-      .addEventListener("submit", function (e) {
-        const newsUrl = document.getElementById("news_url").value.trim();
-        const newsText = document.getElementById("news_text").value.trim();
+    // =============================================
+    // ENHANCED FORM LOGIC WITH 3 INPUT METHODS
+    // =============================================
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      // Elements
+      const form = document.getElementById('analysisForm');
+      const analyzeBtn = document.getElementById('analyzeBtn');
+      const analyzeText = document.getElementById('analyzeText');
+      const inputMethod = document.getElementById('inputMethod');
+      
+      // Input elements
+      const newsUrl = document.getElementById('news_url');
+      const newsText = document.getElementById('news_text');
+      const newsFile = document.getElementById('news_file');
+      
+      // Tab elements
+      const urlTab = document.getElementById('url-tab');
+      const textTab = document.getElementById('text-tab');
+      const fileTab = document.getElementById('file-tab');
+      
+      // Character counter
+      const charCount = document.getElementById('charCount');
+      const charStatus = document.getElementById('charStatus');
+      
+      // File info elements
+      const fileInfo = document.getElementById('fileInfo');
+      const fileName = document.getElementById('fileName');
+      const fileSize = document.getElementById('fileSize');
+      const removeFileBtn = document.getElementById('removeFile');
 
-        // Kiểm tra xem có ít nhất một trong hai trường được điền
-        if (!newsUrl && !newsText) {
-          e.preventDefault();
-          alert(
-            "Vui lòng nhập URL tin tức hoặc nội dung tin tức để phân tích."
-          );
-          return false;
+      // =============================================
+      // TAB SWITCHING LOGIC
+      // =============================================
+      
+      function updateInputMethod(method) {
+        switch(method) {
+          case 'url':
+            inputMethod.textContent = 'Phương thức: URL tin tức';
+            analyzeText.textContent = 'Lấy & Phân tích từ URL';
+            break;
+          case 'text':
+            inputMethod.textContent = 'Phương thức: Nhập văn bản';
+            analyzeText.textContent = 'Phân tích văn bản';
+            break;
+          case 'file':
+            inputMethod.textContent = 'Phương thức: Upload file';
+            analyzeText.textContent = 'Phân tích file';
+            break;
         }
+      }
+      
+      // Tab click handlers
+      urlTab.addEventListener('click', () => updateInputMethod('url'));
+      textTab.addEventListener('click', () => updateInputMethod('text'));
+      fileTab.addEventListener('click', () => updateInputMethod('file'));
 
-        // Nếu chỉ có text, kiểm tra độ dài tối thiểu
-        if (!newsUrl && newsText && newsText.length < 50) {
-          e.preventDefault();
-          alert("Nội dung tin tức phải có ít nhất 50 ký tự.");
-          return false;
-        }
-
-        const btn = document.getElementById("analyzeBtn");
-        if (newsUrl && !newsText) {
-          btn.innerHTML =
-            '<i class="fas fa-spinner fa-spin me-2"></i>Đang lấy nội dung từ URL...';
+      // =============================================
+      // CHARACTER COUNTER FOR TEXT INPUT
+      // =============================================
+      
+      function updateCharCount() {
+        const count = newsText.value.length;
+        charCount.textContent = count;
+        
+        if (count < 50) {
+          charStatus.innerHTML = '<span class="text-danger"><i class="fas fa-exclamation-triangle"></i> Cần thêm ' + (50 - count) + ' ký tự</span>';
+        } else if (count < 100) {
+          charStatus.innerHTML = '<span class="text-warning"><i class="fas fa-check-circle"></i> Đủ điều kiện</span>';
         } else {
-          btn.innerHTML =
-            '<i class="fas fa-spinner fa-spin me-2"></i>Đang phân tích...';
+          charStatus.innerHTML = '<span class="text-success"><i class="fas fa-thumbs-up"></i> Tốt</span>';
         }
-        btn.disabled = true;
+      }
+      
+      newsText.addEventListener('input', updateCharCount);
+      updateCharCount(); // Initial call
+
+      // =============================================
+      // URL EXAMPLE BUTTONS
+      // =============================================
+      
+      document.querySelectorAll('.url-example').forEach(button => {
+        button.addEventListener('click', function() {
+          const exampleUrl = this.dataset.url;
+          newsUrl.value = exampleUrl;
+          newsUrl.focus();
+        });
       });
+
+      // =============================================
+      // FILE UPLOAD HANDLING
+      // =============================================
+      
+      function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+      }
+      
+      newsFile.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file) {
+          // Check file size (10MB limit)
+          if (file.size > 10 * 1024 * 1024) {
+            alert('File quá lớn! Vui lòng chọn file nhỏ hơn 10MB.');
+            this.value = '';
+            fileInfo.style.display = 'none';
+            return;
+          }
+          
+          // Show file info
+          fileName.textContent = file.name;
+          fileSize.textContent = formatFileSize(file.size);
+          fileInfo.style.display = 'block';
+        } else {
+          fileInfo.style.display = 'none';
+        }
+      });
+      
+      removeFileBtn.addEventListener('click', function() {
+        newsFile.value = '';
+        fileInfo.style.display = 'none';
+      });
+
+      // =============================================
+      // FORM VALIDATION & SUBMISSION
+      // =============================================
+      
+      form.addEventListener('submit', function(e) {
+        const activeTab = document.querySelector('.nav-link.active').id;
+        const url = newsUrl.value.trim();
+        const text = newsText.value.trim();
+        const file = newsFile.files[0];
+        
+        let isValid = false;
+        let loadingText = '';
+        
+        // Validate based on active tab
+        switch(activeTab) {
+          case 'url-tab':
+            if (!url) {
+              e.preventDefault();
+              alert('Vui lòng nhập URL tin tức.');
+              newsUrl.focus();
+              return false;
+            }
+            isValid = true;
+            loadingText = '<i class="fas fa-spinner fa-spin me-2"></i>Đang lấy nội dung từ URL...';
+            break;
+            
+          case 'text-tab':
+            if (!text) {
+              e.preventDefault();
+              alert('Vui lòng nhập nội dung tin tức.');
+              newsText.focus();
+              return false;
+            }
+            if (text.length < 50) {
+              e.preventDefault();
+              alert('Nội dung tin tức phải có ít nhất 50 ký tự.');
+              newsText.focus();
+              return false;
+            }
+            isValid = true;
+            loadingText = '<i class="fas fa-spinner fa-spin me-2"></i>Đang phân tích văn bản...';
+            break;
+            
+          case 'file-tab':
+            if (!file) {
+              e.preventDefault();
+              alert('Vui lòng chọn file để upload.');
+              newsFile.focus();
+              return false;
+            }
+            isValid = true;
+            loadingText = '<i class="fas fa-spinner fa-spin me-2"></i>Đang xử lý file...';
+            break;
+        }
+        
+        if (isValid) {
+          // Clear other inputs to avoid confusion
+          if (activeTab !== 'url-tab') newsUrl.value = '';
+          if (activeTab !== 'text-tab') newsText.value = '';
+          if (activeTab !== 'file-tab') {
+            newsFile.value = '';
+            fileInfo.style.display = 'none';
+          }
+          
+          // Update button state
+          analyzeBtn.innerHTML = loadingText;
+          analyzeBtn.disabled = true;
+          
+          // Add loading class for animation
+          analyzeBtn.classList.add('btn-loading');
+        }
+      });
+
+      // =============================================
+      // AUTO-CLEAR INPUTS WHEN SWITCHING TABS
+      // =============================================
+      
+      urlTab.addEventListener('click', function() {
+        newsText.value = '';
+        newsFile.value = '';
+        fileInfo.style.display = 'none';
+        updateCharCount();
+      });
+      
+      textTab.addEventListener('click', function() {
+        newsUrl.value = '';
+        newsFile.value = '';
+        fileInfo.style.display = 'none';
+      });
+      
+      fileTab.addEventListener('click', function() {
+        newsUrl.value = '';
+        newsText.value = '';
+        updateCharCount();
+      });
+    });
 
     // Debug and fix progress bars
     document.addEventListener('DOMContentLoaded', function() {

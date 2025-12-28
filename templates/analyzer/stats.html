@@ -5,207 +5,798 @@
 {% block title %}Thống kê - THYNK UNLIMITED{% endblock %}
 
 {% block content %}
+<!-- Header Section -->
+<div class="mb-4">
+  <div class="container">
 <div class="row">
-  <div class="col-12">
-    <h2 class="text-center mb-4">Thống kê hệ thống</h2>
-    <p class="text-center text-muted mb-5">
-      Tổng quan về hoạt động phân tích tin tức
-    </p>
-  </div>
-</div>
-
-<!-- Overview Stats -->
-<div class="row mb-5">
-  <div class="col-md-3 mb-4">
-    <div class="card text-center shadow-sm">
-      <div class="card-body">
-        <i class="fas fa-newspaper fa-3x text-primary mb-3"></i>
-        <h3 class="text-primary">{{ total_articles|default:0 }}</h3>
-        <p class="text-muted mb-0">Tổng tin tức</p>
+      <div class="col-12 text-center">
+        <h2 class="mb-2">Thống kê Hệ thống</h2>
+        <p class="text-muted">
+          Phân tích và thống kê toàn bộ hoạt động của hệ thống
+        </p>
       </div>
     </div>
   </div>
-  <div class="col-md-3 mb-4">
-    <div class="card text-center shadow-sm">
+</div>
+
+<div class="container-fluid mt-4">
+  <div class="row">
+    <div class="col-lg-11 mx-auto">
+
+<!-- Overview Stats -->
+      <div class="row mb-4">
+        <div class="col-md-3 col-sm-6 mb-3">
+          <div class="card text-center shadow-sm border-0 h-100">
+      <div class="card-body">
+        <i class="fas fa-newspaper fa-3x text-primary mb-3"></i>
+              <h3 class="text-primary mb-1">{{ total_articles|default:0 }}</h3>
+              <p class="text-muted mb-0">Tổng bài báo</p>
+      </div>
+    </div>
+  </div>
+        <div class="col-md-3 col-sm-6 mb-3">
+          <div class="card text-center shadow-sm border-0 h-100">
       <div class="card-body">
         <i class="fas fa-chart-line fa-3x text-success mb-3"></i>
-        <h3 class="text-success">{{ total_analyses|default:0 }}</h3>
+              <h3 class="text-success mb-1">{{ total_analyses|default:0 }}</h3>
         <p class="text-muted mb-0">Lượt phân tích</p>
       </div>
     </div>
   </div>
-  <div class="col-md-3 mb-4">
-    <div class="card text-center shadow-sm">
+        <div class="col-md-3 col-sm-6 mb-3">
+          <div class="card text-center shadow-sm border-0 h-100">
       <div class="card-body">
         <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
-        <h3 class="text-danger">{{ fake_count|default:0 }}</h3>
+              <h3 class="text-danger mb-1">{{ fake_count|default:0 }}</h3>
         <p class="text-muted mb-0">Tin giả phát hiện</p>
       </div>
     </div>
   </div>
-  <div class="col-md-3 mb-4">
-    <div class="card text-center shadow-sm">
+        <div class="col-md-3 col-sm-6 mb-3">
+          <div class="card text-center shadow-sm border-0 h-100">
       <div class="card-body">
         <i class="fas fa-check-circle fa-3x text-info mb-3"></i>
-        <h3 class="text-info">{{ real_count|default:0 }}</h3>
+              <h3 class="text-info mb-1">{{ real_count|default:0 }}</h3>
         <p class="text-muted mb-0">Tin thật xác nhận</p>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Charts Section -->
-<div class="row">
-  <div class="col-lg-6 mb-4">
-    <div class="card shadow">
-      <div class="card-header">
+      <!-- Charts Row: 3 Charts in a row -->
+      <div class="row mb-4">
+        <div class="col-lg-4 mb-4">
+          <div class="card shadow h-100">
+            <div class="card-header bg-light">
         <h5 class="mb-0">
-          <i class="fas fa-pie-chart me-2"></i>Tỷ lệ tin thật/giả
+                <i class="fas fa-shield-alt me-2"></i>Phát hiện tin giả
         </h5>
       </div>
       <div class="card-body">
         {% if total_analyses > 0 %}
-        <div class="text-center">
-          <canvas id="truthChart" width="300" height="300"></canvas>
+              <div class="text-center mb-3">
+                <canvas id="truthChart" height="100"></canvas>
         </div>
-        <div class="row mt-3">
-          <div class="col-6 text-center">
-            <span class="badge bg-success fs-6"
-              >Tin thật: {{ real_percentage|default:0 }}%</span
-            >
+              <div class="row text-center">
+                <div class="col-6">
+                  <span class="badge bg-success fs-6">Tin thật: {{ real_percentage }}%</span>
+                  <div class="mt-1"><small class="text-muted">{{ real_count }} bài</small></div>
           </div>
-          <div class="col-6 text-center">
-            <span class="badge bg-danger fs-6"
-              >Tin giả: {{ fake_percentage|default:0 }}%</span
-            >
+                <div class="col-6">
+                  <span class="badge bg-danger fs-6">Tin giả: {{ fake_percentage }}%</span>
+                  <div class="mt-1"><small class="text-muted">{{ fake_count }} bài</small></div>
           </div>
+        </div>
+              <div class="mt-3 text-center">
+                <small class="text-muted">
+                  <i class="fas fa-info-circle"></i> Độ tin cậy trung bình: <strong>{{ avg_fake_confidence }}%</strong>
+                </small>
         </div>
         {% else %}
         <div class="text-center text-muted py-5">
           <i class="fas fa-chart-pie fa-3x mb-3"></i>
-          <p>Chưa có dữ liệu để hiển thị</p>
+                <p>Chưa có dữ liệu</p>
         </div>
         {% endif %}
       </div>
     </div>
   </div>
 
-  <div class="col-lg-6 mb-4">
-    <div class="card shadow">
-      <div class="card-header">
+        <div class="col-lg-4 mb-4">
+          <div class="card shadow h-100">
+            <div class="card-header bg-light">
         <h5 class="mb-0">
-          <i class="fas fa-chart-bar me-2"></i>Thống kê chi tiết
+                <i class="fas fa-source me-2"></i>Nguồn phân tích
         </h5>
       </div>
       <div class="card-body">
-        <div class="mb-3">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <span>Tin thật</span>
-            <span class="badge bg-success">{{ real_count|default:0 }}</span>
+              {% if total_articles > 0 %}
+              <div class="text-center mb-3">
+                <canvas id="sourceChart" height="100"></canvas>
+              </div>
+              <div class="row text-center">
+                <div class="col-4">
+                  <span class="badge bg-success fs-6">URL</span>
+                  <div class="mt-1"><small class="text-muted">{{ url_count }} ({{ url_percentage }}%)</small></div>
+                </div>
+                <div class="col-4">
+                  <span class="badge bg-info fs-6">Text</span>
+                  <div class="mt-1"><small class="text-muted">{{ text_count }} ({{ text_percentage }}%)</small></div>
+                </div>
+                <div class="col-4">
+                  <span class="badge bg-warning fs-6">File</span>
+                  <div class="mt-1"><small class="text-muted">{{ file_count }} ({{ file_percentage }}%)</small></div>
+                </div>
+              </div>
+              {% else %}
+              <div class="text-center text-muted py-5">
+                <i class="fas fa-chart-bar fa-3x mb-3"></i>
+                <p>Chưa có dữ liệu</p>
+              </div>
+              {% endif %}
           </div>
-          <div class="progress">
-            <div
-              class="progress-bar bg-success"
-              role="progressbar"
-              style="width: {% if total_analyses > 0 %}{{ real_percentage }}%{% else %}0%{% endif %}"
-            ></div>
           </div>
         </div>
 
-        <div class="mb-3">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <span>Tin giả</span>
-            <span class="badge bg-danger">{{ fake_count|default:0 }}</span>
+        <div class="col-lg-4 mb-4">
+          <div class="card shadow h-100">
+            <div class="card-header bg-light">
+              <h5 class="mb-0">
+                <i class="fas fa-heart me-2"></i>Phân tích cảm xúc
+              </h5>
+            </div>
+            <div class="card-body">
+              {% if total_analyses > 0 %}
+              <div class="text-center mb-3">
+                <canvas id="sentimentChart" height="100"></canvas>
+              </div>
+              <div class="row text-center">
+                <div class="col-4">
+                  <span class="badge bg-success">😊 Tích cực</span>
+                  <div class="mt-1"><small class="text-muted">{{ positive_count }} ({{ positive_percentage }}%)</small></div>
+                </div>
+                <div class="col-4">
+                  <span class="badge bg-secondary">😐 Trung tính</span>
+                  <div class="mt-1"><small class="text-muted">{{ neutral_count }} ({{ neutral_percentage }}%)</small></div>
+                </div>
+                <div class="col-4">
+                  <span class="badge bg-danger">😢 Tiêu cực</span>
+                  <div class="mt-1"><small class="text-muted">{{ negative_count }} ({{ negative_percentage }}%)</small></div>
+                </div>
+              </div>
+              <div class="mt-3 text-center">
+                <small class="text-muted">
+                  <i class="fas fa-info-circle"></i> Độ tin cậy trung bình: <strong>{{ avg_sentiment_confidence }}%</strong>
+                </small>
+              </div>
+              {% else %}
+              <div class="text-center text-muted py-5">
+                <i class="fas fa-smile fa-3x mb-3"></i>
+                <p>Chưa có dữ liệu</p>
+              </div>
+              {% endif %}
           </div>
-          <div class="progress">
-            <div
-              class="progress-bar bg-danger"
-              role="progressbar"
-              style="width: {% if total_analyses > 0 %}{{ fake_percentage }}%{% else %}0%{% endif %}"
-            ></div>
+          </div>
           </div>
         </div>
 
-        <div class="mt-4">
-          <h6 class="text-muted">Tỷ lệ chính xác hệ thống</h6>
-          <div class="progress" style="height: 25px">
-            <div
-              class="progress-bar bg-primary"
-              role="progressbar"
-              style="width: 95%"
-            >
-              95%
+      <!-- Topic Stats Row -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card shadow h-100">
+            <div class="card-header bg-light">
+              <h5 class="mb-0">
+                <i class="fas fa-tags me-2"></i>Top 10 chủ đề
+              </h5>
+            </div>
+            <div class="card-body">
+              {% if topic_stats %}
+              <div class="topic-list" style="max-height: 300px; overflow-y: auto;">
+                {% for topic in topic_stats %}
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="fw-bold">{{ forloop.counter }}. {{ topic.topic|default:"Không xác định" }}</span>
+                    <span class="badge bg-primary">{{ topic.count }}</span>
+                  </div>
+                  <div class="progress" style="height: 8px;">
+                    <div class="progress-bar bg-info" role="progressbar" 
+                         style="width: {% widthratio topic.count topic_stats.0.count 100 %}%">
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+              <div class="mt-3 text-center">
+                <small class="text-muted">
+                  <i class="fas fa-info-circle"></i> Độ tin cậy trung bình: <strong>{{ avg_topic_confidence }}%</strong>
+                </small>
+              </div>
+              {% else %}
+              <div class="text-center text-muted py-5">
+                <i class="fas fa-tags fa-3x mb-3"></i>
+                <p>Chưa có dữ liệu</p>
+              </div>
+              {% endif %}
             </div>
           </div>
         </div>
       </div>
+
+      <!-- Full History Section -->
+      <div class="row mb-4" id="history-section">
+        <div class="col-12">
+          <div class="card shadow">
+            <div class="card-header bg-light">
+              <h5 class="mb-0">
+                <i class="fas fa-history me-2"></i>Lịch sử phân tích
+              </h5>
+            </div>
+            <div class="card-body">
+              <!-- Filter Section -->
+              <div class="row align-items-center mb-3">
+                <div class="col-md-6 mb-2 mb-md-0">
+                  <h6 class="mb-0">
+                    <i class="fas fa-filter me-2"></i>Lọc theo nguồn
+                  </h6>
+                </div>
+                <div class="col-md-6">
+                  <div class="btn-group w-100" role="group">
+                    <a href="?source=all#history-section" class="btn btn-sm {% if source_filter == 'all' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                      <i class="fas fa-globe"></i> Tất cả
+                    </a>
+                    <a href="?source=url#history-section" class="btn btn-sm {% if source_filter == 'url' %}btn-success{% else %}btn-outline-success{% endif %}">
+                      <i class="fas fa-link"></i> URL
+                    </a>
+                    <a href="?source=text#history-section" class="btn btn-sm {% if source_filter == 'text' %}btn-info{% else %}btn-outline-info{% endif %}">
+                      <i class="fas fa-keyboard"></i> Văn bản
+                    </a>
+                    <a href="?source=file#history-section" class="btn btn-sm {% if source_filter == 'file' %}btn-warning{% else %}btn-outline-warning{% endif %}">
+                      <i class="fas fa-file-upload"></i> File
+                    </a>
     </div>
   </div>
 </div>
+              {% if total_articles > 0 %}
+              <div class="row mt-3">
+                <div class="col-12">
+                  <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteAllModal">
+                    <i class="fas fa-trash-alt me-2"></i>Xóa tất cả lịch sử
+                  </button>
+                </div>
+              </div>
+              {% endif %}
 
-<!-- Additional Info -->
+              {% if articles %}
+              <!-- Articles Table -->
+              <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th style="width: 5%">#</th>
+                      <th style="width: 35%">Tiêu đề</th>
+                      <th style="width: 10%">Nguồn</th>
+                      <th style="width: 12%">Chủ đề</th>
+                      <th style="width: 12%">Kết quả</th>
+                      <th style="width: 13%">Thời gian</th>
+                      <th style="width: 8%">Thao tác</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for article in articles %}
+                    <tr>
+                      <td class="article-row" data-bs-toggle="collapse" data-bs-target="#detail-{{ article.id }}" style="cursor: pointer;">{{ forloop.counter }}</td>
+                      <td class="article-row" data-bs-toggle="collapse" data-bs-target="#detail-{{ article.id }}" style="cursor: pointer;">
+                        <div class="text-truncate" style="max-width: 350px;" title="{{ article.title }}">
+                          {{ article.title }}
+                        </div>
+                      </td>
+                      <td class="article-row" data-bs-toggle="collapse" data-bs-target="#detail-{{ article.id }}" style="cursor: pointer;">
+                        {% if article.input_source == 'url' %}
+                          <span class="badge bg-success">
+                            <i class="fas fa-link me-1"></i>URL
+                          </span>
+                        {% elif article.input_source == 'text' %}
+                          <span class="badge bg-info">
+                            <i class="fas fa-keyboard me-1"></i>Text
+                          </span>
+                        {% elif article.input_source == 'file' %}
+                          <span class="badge bg-warning">
+                            <i class="fas fa-file-upload me-1"></i>File
+                          </span>
+                        {% endif %}
+                      </td>
+                      <td class="article-row" data-bs-toggle="collapse" data-bs-target="#detail-{{ article.id }}" style="cursor: pointer;">
+                        {% if article.category %}
+                          <span class="badge bg-secondary">{{ article.category }}</span>
+                        {% else %}
+                          <span class="text-muted">-</span>
+                        {% endif %}
+                      </td>
+                      <td class="article-row" data-bs-toggle="collapse" data-bs-target="#detail-{{ article.id }}" style="cursor: pointer;">
+                        {% if article.analysisresult_set.first %}
+                          {% with analysis=article.analysisresult_set.first %}
+                            {% if analysis.is_fake_prediction %}
+                              <span class="badge bg-danger">
+                                <i class="fas fa-exclamation-triangle me-1"></i>Tin giả
+                              </span>
+                            {% else %}
+                              <span class="badge bg-success">
+                                <i class="fas fa-check-circle me-1"></i>Tin thật
+                              </span>
+                            {% endif %}
+                          {% endwith %}
+                        {% else %}
+                          <span class="text-muted">-</span>
+                        {% endif %}
+                      </td>
+                      <td class="article-row" data-bs-toggle="collapse" data-bs-target="#detail-{{ article.id }}" style="cursor: pointer;">
+                        <small class="text-muted">
+                          {{ article.created_at|date:"d/m/Y H:i" }}
+                        </small>
+                      </td>
+                      <td>
+                        <button type="button" class="btn btn-sm btn-outline-danger delete-btn" 
+                                data-article-id="{{ article.id }}" 
+                                data-article-title="{{ article.title|truncatewords:10 }}"
+                                data-bs-toggle="modal" 
+                                data-bs-target="#deleteModal"
+                                onclick="event.stopPropagation();">
+                          <i class="fas fa-trash-alt"></i>
+                        </button>
+                      </td>
+                    </tr>
+                    <!-- Expandable Detail Row -->
+                    <tr class="collapse" id="detail-{{ article.id }}">
+                      <td colspan="7" class="bg-light">
+                        <div class="p-3">
 <div class="row">
+                            <div class="col-md-8">
+                              <h6 class="text-primary mb-2">
+                                <i class="fas fa-info-circle me-2"></i>Chi tiết nội dung
+                              </h6>
+                              <div class="mb-3">
+                                <strong>Tiêu đề:</strong>
+                                <p class="mb-2">{{ article.title }}</p>
+                              </div>
+                              {% if article.url %}
+                              <div class="mb-3">
+                                <strong>URL:</strong>
+                                <p class="mb-2">
+                                  <a href="{{ article.url }}" target="_blank" class="text-decoration-none">
+                                    {{ article.url }}
+                                    <i class="fas fa-external-link-alt ms-1"></i>
+                                  </a>
+                                </p>
+                              </div>
+                              {% endif %}
+                              <div class="mb-3">
+                                <strong>Nội dung đầy đủ:</strong>
+                                <div class="mt-2 p-3 bg-white rounded border">
+                                  <p class="mb-0 text-muted" style="white-space: pre-line;">{{ article.content }}</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4">
+                              {% if article.analysisresult_set.first %}
+                                {% with analysis=article.analysisresult_set.first %}
+                                <h6 class="text-primary mb-2">
+                                  <i class="fas fa-chart-bar me-2"></i>Kết quả phân tích
+                                </h6>
+                                <div class="analysis-summary">
+                                  <div class="mb-2">
+                                    <strong>Phát hiện tin giả:</strong><br>
+                                    {% if analysis.is_fake_prediction %}
+                                      <span class="badge bg-danger">Tin giả</span>
+                                      <small class="text-muted">({% widthratio analysis.fake_confidence_score 1 100 %}%)</small>
+                                    {% else %}
+                                      <span class="badge bg-success">Tin thật</span>
+                                      <small class="text-muted">({% widthratio analysis.fake_confidence_score 1 100 %}%)</small>
+                                    {% endif %}
+                                  </div>
+                                  {% if analysis.sentiment %}
+                                  <div class="mb-2">
+                                    <strong>Cảm xúc:</strong><br>
+                                    <span class="badge 
+                                      {% if analysis.sentiment == 'tích cực' %}bg-success
+                                      {% elif analysis.sentiment == 'tiêu cực' %}bg-danger
+                                      {% else %}bg-secondary{% endif %}">
+                                      {{ analysis.sentiment|capfirst }}
+                                    </span>
+                                    <small class="text-muted">({% widthratio analysis.sentiment_confidence 1 100 %}%)</small>
+                                  </div>
+                                  {% endif %}
+                                  {% if analysis.topic %}
+                                  <div class="mb-2">
+                                    <strong>Chủ đề:</strong><br>
+                                    <span class="badge bg-info">{{ analysis.topic }}</span>
+                                    <small class="text-muted">({% widthratio analysis.topic_confidence 1 100 %}%)</small>
+                                  </div>
+                                  {% endif %}
+                                  {% if analysis.summary %}
+                                  <div class="mb-2">
+                                    <strong>Tóm tắt:</strong><br>
+                                    <div class="mt-1 p-2 bg-white rounded">
+                                      <small class="text-muted">{{ analysis.summary }}</small>
+                                    </div>
+                                  </div>
+                                  {% endif %}
+                                  <div class="mb-2">
+                                    <strong>Thời gian xử lý:</strong><br>
+                                    <small class="text-muted">{{ analysis.processing_time|floatformat:2 }} giây</small>
+                                  </div>
+                                </div>
+                                {% endwith %}
+                              {% else %}
+                                <p class="text-muted">Chưa có kết quả phân tích</p>
+                              {% endif %}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Pagination -->
+              {% if articles.has_other_pages %}
+              <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                  {% if articles.has_previous %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ articles.previous_page_number }}&source={{ source_filter }}#history-section">
+                      <i class="fas fa-chevron-left"></i> Trước
+                    </a>
+                  </li>
+                  {% else %}
+                  <li class="page-item disabled">
+                    <span class="page-link"><i class="fas fa-chevron-left"></i> Trước</span>
+                  </li>
+                  {% endif %}
+
+                  {% for num in articles.paginator.page_range %}
+                    {% if articles.number == num %}
+                      <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                      </li>
+                    {% elif num > articles.number|add:'-3' and num < articles.number|add:'3' %}
+                      <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}&source={{ source_filter }}#history-section">{{ num }}</a>
+                      </li>
+                    {% endif %}
+                  {% endfor %}
+
+                  {% if articles.has_next %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ articles.next_page_number }}&source={{ source_filter }}#history-section">
+                      Sau <i class="fas fa-chevron-right"></i>
+                    </a>
+                  </li>
+                  {% else %}
+                  <li class="page-item disabled">
+                    <span class="page-link">Sau <i class="fas fa-chevron-right"></i></span>
+                  </li>
+                  {% endif %}
+                </ul>
+              </nav>
+              {% endif %}
+
+              {% else %}
+              <!-- Empty State -->
+              <div class="text-center py-5">
+                <i class="fas fa-inbox fa-4x text-muted mb-3"></i>
+                <h5 class="text-muted">Chưa có bài báo nào được phân tích</h5>
+                <p class="text-muted mb-4">Hãy bắt đầu phân tích bài báo đầu tiên của bạn!</p>
+                <a href="{% url 'analyzer:analyze' %}" class="btn btn-primary">
+                  <i class="fas fa-plus-circle me-2"></i>Phân tích bài báo
+                </a>
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Performance Stats -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card shadow">
+            <div class="card-header bg-light">
+              <h5 class="mb-0">
+                <i class="fas fa-tachometer-alt me-2"></i>Hiệu suất hệ thống
+              </h5>
+            </div>
+            <div class="card-body">
+              <div class="row text-center">
+                <div class="col-md-3 mb-3">
+                  <div class="p-3 bg-light rounded">
+                    <i class="fas fa-clock fa-2x text-primary mb-2"></i>
+                    <h4 class="mb-1">{{ avg_processing_time }}s</h4>
+                    <small class="text-muted">Thời gian xử lý TB</small>
+                  </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                  <div class="p-3 bg-light rounded">
+                    <i class="fas fa-compress-alt fa-2x text-info mb-2"></i>
+                    <h4 class="mb-1">{{ avg_compression_ratio }}%</h4>
+                    <small class="text-muted">Tỷ lệ rút gọn TB</small>
+                  </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                  <div class="p-3 bg-light rounded">
+                    <i class="fas fa-file-alt fa-2x text-success mb-2"></i>
+                    <h4 class="mb-1">{{ summary_percentage }}%</h4>
+                    <small class="text-muted">Bài có tóm tắt</small>
+                  </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                  <div class="p-3 bg-light rounded">
+                    <i class="fas fa-check-double fa-2x text-warning mb-2"></i>
+                    <h4 class="mb-1">95%+</h4>
+                    <small class="text-muted">Độ chính xác</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- System Info -->
+      <div class="row mb-4">
   <div class="col-12">
     <div class="card shadow">
-      <div class="card-header">
+            <div class="card-header bg-light">
         <h5 class="mb-0">
           <i class="fas fa-info-circle me-2"></i>Thông tin hệ thống
         </h5>
       </div>
       <div class="card-body">
         <div class="row">
-          <div class="col-md-6">
-            <h6>Mô hình AI</h6>
-            <p class="text-muted">
-              Sử dụng mô hình Machine Learning tiên tiến để phân tích
-            </p>
-
-            <h6>Độ chính xác</h6>
-            <p class="text-muted">
-              Đạt độ chính xác 95% trên tập dữ liệu kiểm thử
-            </p>
-          </div>
-          <div class="col-md-6">
-            <h6>Ngôn ngữ hỗ trợ</h6>
-            <p class="text-muted">Tiếng Việt, tối ưu cho tin tức Việt Nam</p>
-
-            <h6>Cập nhật</h6>
-            <p class="text-muted">
-              Mô hình được cập nhật định kỳ để cải thiện hiệu suất
-            </p>
+                <div class="col-md-6 mb-3">
+                  <h6><i class="fas fa-brain text-primary me-2"></i>Mô hình AI</h6>
+                  <ul class="mb-0">
+                    <li><strong>Model 1:</strong> Sentiment Analysis (RoBERTa)</li>
+                    <li><strong>Model 2:</strong> Fake News Detection (PhoBERT)</li>
+                    <li><strong>Model 3:</strong> Text Summarization</li>
+                    <li><strong>Model 4:</strong> Topic Classification (LDA)</li>
+                  </ul>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <h6><i class="fas fa-chart-line text-success me-2"></i>Hiệu suất</h6>
+                  <ul class="mb-0">
+                    <li><strong>Độ chính xác:</strong> 95%+ trên tập test</li>
+                    <li><strong>Ngôn ngữ:</strong> Tiếng Việt</li>
+                    <li><strong>Cập nhật:</strong> Định kỳ hàng tuần</li>
+                    <li><strong>Phiên bản:</strong> 4.0 (4 Models)</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </div>
 
+<style>
+  .topic-list {
+    padding-right: 10px;
+  }
+
+  .topic-list::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .topic-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+
+  .topic-list::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+  }
+
+  .topic-list::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+  .article-row:hover {
+    background-color: #f8f9fa;
+  }
+  
+  .analysis-summary {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 3px solid #0d6efd;
+  }
+</style>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  // Chart cho tỷ lệ tin thật/giả
-  const ctx = document.getElementById('truthChart');
-  if (ctx && {{ total_analyses|default:0 }} > 0) {
-      new Chart(ctx, {
+  // Chart 1: Tỷ lệ tin thật/giả
+  const ctx1 = document.getElementById('truthChart');
+  if (ctx1 && {{ total_analyses|default:0 }} > 0) {
+      new Chart(ctx1, {
           type: 'doughnut',
           data: {
               labels: ['Tin thật', 'Tin giả'],
               datasets: [{
                   data: [{{ real_count|default:0 }}, {{ fake_count|default:0 }}],
                   backgroundColor: ['#28a745', '#dc3545'],
-                  borderWidth: 0
+                  borderWidth: 2,
+                  borderColor: '#fff'
               }]
           },
           options: {
               responsive: true,
-              maintainAspectRatio: false,
+              maintainAspectRatio: true,
               plugins: {
                   legend: {
-                      position: 'bottom'
+                      position: 'bottom',
+                      labels: {
+                          padding: 15,
+                          font: {
+                              size: 12
+                          }
+                      }
                   }
               }
           }
       });
   }
-</script>
-{% endblock %}
 
+  // Chart 2: Nguồn input
+  const ctx2 = document.getElementById('sourceChart');
+  if (ctx2 && {{ total_articles|default:0 }} > 0) {
+      new Chart(ctx2, {
+          type: 'pie',
+          data: {
+              labels: ['URL', 'Text', 'File'],
+              datasets: [{
+                  data: [{{ url_count|default:0 }}, {{ text_count|default:0 }}, {{ file_count|default:0 }}],
+                  backgroundColor: ['#28a745', '#17a2b8', '#ffc107'],
+                  borderWidth: 2,
+                  borderColor: '#fff'
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: true,
+              plugins: {
+                  legend: {
+                      position: 'bottom',
+                      labels: {
+                          padding: 15,
+                          font: {
+                              size: 12
+                          }
+                      }
+                  }
+              }
+          }
+      });
+  }
+
+  // Chart 3: Cảm xúc
+  const ctx3 = document.getElementById('sentimentChart');
+  if (ctx3 && {{ total_analyses|default:0 }} > 0) {
+      new Chart(ctx3, {
+          type: 'doughnut',
+          data: {
+              labels: ['Tích cực', 'Trung tính', 'Tiêu cực'],
+              datasets: [{
+                  data: [{{ positive_count|default:0 }}, {{ neutral_count|default:0 }}, {{ negative_count|default:0 }}],
+                  backgroundColor: ['#28a745', '#6c757d', '#dc3545'],
+                  borderWidth: 2,
+                  borderColor: '#fff'
+              }]
+          },
+          options: {
+              responsive: true,
+              maintainAspectRatio: true,
+              plugins: {
+                  legend: {
+                      position: 'bottom',
+                      labels: {
+                          padding: 15,
+                          font: {
+                              size: 12
+                          }
+                      }
+                  }
+              }
+          }
+      });
+  }
+
+  // Handle delete button clicks
+  const deleteBtns = document.querySelectorAll('.delete-btn');
+  deleteBtns.forEach(btn => {
+    btn.addEventListener('click', function() {
+      const articleId = this.getAttribute('data-article-id');
+      const articleTitle = this.getAttribute('data-article-title');
+      
+      // Update modal content
+      document.getElementById('deleteArticleId').value = articleId;
+      document.getElementById('deleteArticleTitle').textContent = articleTitle;
+      
+      // Update form action
+      const deleteForm = document.getElementById('deleteForm');
+      deleteForm.action = `/stats/delete/${articleId}/`;
+    });
+  });
+</script>
+
+<!-- Delete Single Article Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel">
+          <i class="fas fa-exclamation-triangle text-warning me-2"></i>Xác nhận xóa
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Bạn có chắc chắn muốn xóa bài báo này?</p>
+        <p class="text-muted mb-0">
+          <strong>Tiêu đề:</strong> <span id="deleteArticleTitle"></span>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <form method="POST" action="" id="deleteForm">
+          {% csrf_token %}
+          <input type="hidden" name="article_id" id="deleteArticleId">
+          <input type="hidden" name="next" value="stats">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times me-2"></i>Hủy
+          </button>
+          <button type="submit" class="btn btn-danger">
+            <i class="fas fa-trash-alt me-2"></i>Xóa
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete All History Modal -->
+<div class="modal fade" id="deleteAllModal" tabindex="-1" aria-labelledby="deleteAllModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h5 class="modal-title" id="deleteAllModalLabel">
+          <i class="fas fa-exclamation-triangle me-2"></i>Cảnh báo: Xóa tất cả lịch sử
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger mb-3">
+          <i class="fas fa-exclamation-circle me-2"></i>
+          <strong>Cảnh báo:</strong> Hành động này sẽ xóa vĩnh viễn tất cả {{ total_articles }} bài báo và không thể khôi phục!
+        </div>
+        <p class="mb-0">Bạn có chắc chắn muốn xóa toàn bộ lịch sử phân tích?</p>
+      </div>
+      <div class="modal-footer">
+        <form method="POST" action="{% url 'analyzer:delete_all_history' %}">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="stats">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times me-2"></i>Hủy
+          </button>
+          <button type="submit" class="btn btn-danger">
+            <i class="fas fa-trash-alt me-2"></i>Xóa tất cả
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

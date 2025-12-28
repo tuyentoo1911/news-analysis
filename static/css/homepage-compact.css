@@ -134,61 +134,61 @@
         padding: 2.5rem 0 2rem 0;
         background: linear-gradient(180deg, #fff 45%, #f0f4ff 55%);
     }
-    
+
     .hero-title-compact {
         font-size: 1.6rem;
         text-align: center;
     }
-    
+
     .hero-subtitle-compact {
         text-align: center;
         font-size: 0.75rem;
     }
-    
+
     .hero-description-compact {
         text-align: center;
         font-size: 0.8rem;
         max-width: 100%;
     }
-    
+
     .hero-action {
         align-items: center;
         text-align: center;
     }
-    
+
     .hero-tagline {
         font-size: 0.65rem;
     }
-    
+
     .hero-image-container-compact {
         margin-top: 1.5rem;
         padding: 0.5rem;
     }
-    
+
     .hero-brain-image-compact {
         max-width: 70%;
         animation: gentle-float-mobile 4s ease-in-out infinite;
     }
 }
-}
+
 
 @media (max-width: 576px) {
     .hero-title-compact {
         font-size: 1.4rem;
     }
-    
+
     .hero-subtitle-compact {
         font-size: 0.7rem;
     }
-    
+
     .hero-description-compact {
         font-size: 0.75rem;
     }
-    
+
     .hero-tagline {
         font-size: 0.6rem;
     }
-    
+
     .hero-brain-image-compact {
         max-width: 65%;
     }
@@ -257,22 +257,22 @@
     .features-section-compact {
         padding: 1.5rem 0 2rem 0;
     }
-    
+
     .feature-card-compact {
         padding: 1rem 0.5rem;
         margin-bottom: 1rem;
     }
-    
+
     .feature-icon-compact {
         width: 42px;
         height: 42px;
         font-size: 1.1rem;
     }
-    
+
     .feature-title-compact {
         font-size: 0.95rem;
     }
-    
+
     .feature-description-compact {
         font-size: 0.825rem;
     }
